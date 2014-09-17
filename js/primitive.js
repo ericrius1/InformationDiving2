@@ -35,9 +35,11 @@ G.Primitive.prototype = {
   toggleActivate: function(keyCode) {
     if(this.key === G.keyMapping[keyCode]){
      this.$menuElement.addClass('active');
+     this.active = true;
     }
     else{
       this.$menuElement.removeClass('active');
+      this.active = false;
     }
   },
   update: function() {}
