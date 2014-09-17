@@ -51,16 +51,22 @@ G.CurveDots.prototype.spawn = function(){
   strandGeometry.dynamic = false
   var strand = new THREE.Line(strandGeometry, strandMat)
   strand.scale.set(G.rf(10, 100), G.rf(10, 100), 1)
-  strand.rotation.set(0, G.rf(0, Math.PI * 2), 0)
   G.scene.add(strand)
+
+  //We need to encapsulate ball growing and shrinking
+  var ballGeo = new THREE.SphereGeometry(2, 32)
+  var ball = new THREE.Mesh(ballGeo);
+  strand.ball = ball;
+  G.scene.add(ball);
+  ball.position.x = G.rf(-100, 100)
 
   //positioning
   this._fakeObj.position.copy(G.controlObject.position)
   var direction = G.fpsControls.getDirection()
-  this._fakeObj.translateX(direction.x * this._distanceFromPlayer)
-  this._fakeObj.translateY(-10)
-  this._fakeObj.translateZ(direction.z * this._distanceFromPlayer)
-  strand.position.copy(this._fakeObj.position);
+  // this._fakeObj.translateX(direction.x * this._distanceFromPlayer)
+  // this._fakeObj.translateY(-10)
+  // this._fakeObj.translateZ(direction.z * this._distanceFromPlayer)
+  // strand.position.copy(this._fakeObj.position);
 
   strand.material.attributes.opacity.needsUpdate = true
 
@@ -69,6 +75,8 @@ G.CurveDots.prototype.spawn = function(){
   
   function growStrand(strand, vertexIndex) {
     var opacity = strand.material.attributes.opacity;
+    var pos = strand.geometry.vertices[vertexIndex];
+    // strand.ball.position.set(pos.x, pos.y, pos.z);
     opacity.value[vertexIndex++] = 1;
     opacity.needsUpdate = true
     if (vertexIndex === opacity.value.length) return
