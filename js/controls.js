@@ -3,6 +3,7 @@ var Controls = function() {
   G.controlObject = G.fpsControls.getObject();
   // G.controlObject.position.z = -100;
   G.scene.add(G.fpsControls.getObject());
+  var mouseTimeoutId ;
 
   function teleport(point) {
     G.controlObject.position.set(point);
@@ -44,7 +45,7 @@ var Controls = function() {
     document.addEventListener('mozpointerlockerror', pointerlockerror, false);
     document.addEventListener('webkitpointerlockerror', pointerlockerror, false);
 
-    document.getElementById('glContainer').addEventListener('click', function(event) {
+    document.addEventListener('click', function(event) {
 
 
 
@@ -86,10 +87,19 @@ var Controls = function() {
   }
 
 
-  $(document).on('mousedown', function(){
-    G.emitter.trigger('startclonearc');
-  })
-  $(document).on('mouseup', function(){
-    G.emitter.trigger('stopclonearc')
+  function mouseHold(){
+    G.emitter.trigger('spawn');
+  }
+
+  function mouseRelease(){
+    G.emitter.trigger('unspawn')
+  }
+  $(document).on('mousedown', mouseHold);
+  $(document).on('mouseup', mouseRelease);
+
+  $(document).on('keydown', function(event){
+    if(event.keyCode === 82){
+    }
+
   })
 }

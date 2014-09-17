@@ -1,4 +1,4 @@
-var G = {}
+
 
 G.controlsActive = true;
 G.pHeight = 10
@@ -102,7 +102,10 @@ G.init = function() {
   // G.controls = new THREE.OrbitControls(G.camera, G.renderer.domElement);
     G.controls = new Controls();
   }
-  G.arcCloner = new ArcCloner();
+  G.arcCloner = new G.ArcCloner(this);
+  G.curveDots = new G.CurveDots(this);
+  G.curveDots.spawn();
+
 
   this.text = new TextParticles({
     vertexShader: this.shaders.vs.text,
@@ -172,7 +175,7 @@ G.animate = function() {
   if (this.controlsActive) {
     this.controls.update()
   }
-
+  this.arcCloner.update()
   this.stats.update()
   requestAnimationFrame(this.animate.bind(this));
   G.renderer.clear();

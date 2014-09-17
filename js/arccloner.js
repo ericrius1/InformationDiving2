@@ -1,81 +1,71 @@
-function ArcCloner() {
-  var clonerTimeoutInterval = 50
-  var colorPalette = [0xfeee40, 0x17a1d2, 0xf22a5b, 0x9f0a5c];
-  var strands = []
-  var distanceFromPlayer = 200
-  var fakeObj = new THREE.Object3D()
-  
+G.ArcCloner = function() {
+  G.Primitive.call(this);
+  this._colorPalette = [0xfeee40, 0x17a1d2, 0xf22a5b, 0x9f0a5c];
+  this._distanceFromPlayer = 200
+  this._fakeObj = new THREE.Object3D() 
+  this.spawnInterval = 100;
+}
 
-  G.emitter.on('startclonearc', function() {
-    this.cloneArc()
-  }.bind(this));
-  G.emitter.on('stopclonearc', function() {
-    window.clearTimeout(this.clonerTimeoutId);
-  }.bind(this));
+G.ArcCloner.prototype = Object.create(G.Primitive.prototype);
 
-  this.cloneArc = function() {
-    //get cam direction
+G.ArcCloner.prototype.spawn = function(){
 
-    var strandMat = new THREE.ShaderMaterial({
-      uniforms: {
-        color: {
-          type: 'c',
-          value: new THREE.Color(_.sample(colorPalette))
-        }
+  //So we have out update loop
+  G.Primitive.prototype.spawn.apply(this, arguments);
+
+  var strandMat = new THREE.ShaderMaterial({
+    uniforms: {
+      color: {
+        type: 'c',
+        value: new THREE.Color(_.sample(this._colorPalette))
+      }
+    },
+    attributes: {
+      opacity: {
+        type: 'f',
+        value: []
       },
-      attributes: {
-        opacity: {
-          type: 'f',
-          value: []
-        },
-      },
-      vertexShader: G.shaders.vs.strand,
-      fragmentShader: G.shaders.fs.strand,
-      transparent: true,
-      depthTest: false,
-      depthWrite: false
-    });
+    },
+    vertexShader: G.shaders.vs.strand,
+    fragmentShader: G.shaders.fs.strand,
+    transparent: true,
+    depthTest: false,
+    depthWrite: false
+  });
 
-    var SUBDIVISIONS = 100;
+  var SUBDIVISIONS = 100;
 
-    var strandGeometry = new THREE.Geometry()
-    var curve = new THREE.QuadraticBezierCurve3();
+  var strandGeometry = new THREE.Geometry()
+  var curve = new THREE.QuadraticBezierCurve3();
 
-    curve.v0 = new THREE.Vector3(0, 0, 0);
-    curve.v1 = new THREE.Vector3(1, 2, 0);
-    curve.v2 = new THREE.Vector3(2, 0, 0);
+  curve.v0 = new THREE.Vector3(0, 0, 0);
+  curve.v1 = new THREE.Vector3(1, 2, 0);
+  curve.v2 = new THREE.Vector3(2, 0, 0);
 
-    var opacity = strandMat.attributes.opacity.value
-    for (var j = 0; j < SUBDIVISIONS; j++) {
-      strandGeometry.vertices.push(curve.getPoint(j / SUBDIVISIONS))
-      opacity[j] = 0.0;
-    }
-    strandGeometry.dynamic = false
-    var strand = new THREE.Line(strandGeometry, strandMat)
-    strand.scale.set(G.rf(10, 100), G.rf(10, 100), 1)
-    strand.rotation.set(0, G.rf(0, Math.PI * 2), 0)
-    G.scene.add(strand)
-
-    //positioning
-    fakeObj.position.copy(G.controlObject.position)
-    var direction = G.fpsControls.getDirection()
-    fakeObj.translateX(direction.x * distanceFromPlayer)
-    fakeObj.translateY(-10)
-    fakeObj.translateZ(direction.z * distanceFromPlayer)
-    strand.position.copy(fakeObj.position);
-
-    strand.material.attributes.opacity.needsUpdate = true
-
-    //To keep things simple, lets grow the strand immediately upon creation. 
-    growStrand(strand, 0)
-    this.clonerTimeoutId = setTimeout(function() {
-      this.cloneArc();
-    }.bind(this)
-    , clonerTimeoutInterval);
-
+  var opacity = strandMat.attributes.opacity.value
+  for (var j = 0; j < SUBDIVISIONS; j++) {
+    strandGeometry.vertices.push(curve.getPoint(j / SUBDIVISIONS))
+    opacity[j] = 0.0;
   }
+  strandGeometry.dynamic = false
+  var strand = new THREE.Line(strandGeometry, strandMat)
+  strand.scale.set(G.rf(10, 100), G.rf(10, 100), 1)
+  strand.rotation.set(0, G.rf(0, Math.PI * 2), 0)
+  G.scene.add(strand)
 
+  //positioning
+  this._fakeObj.position.copy(G.controlObject.position)
+  var direction = G.fpsControls.getDirection()
+  this._fakeObj.translateX(direction.x * this._distanceFromPlayer)
+  this._fakeObj.translateY(-10)
+  this._fakeObj.translateZ(direction.z * this._distanceFromPlayer)
+  strand.position.copy(this._fakeObj.position);
 
+  strand.material.attributes.opacity.needsUpdate = true
+
+  //To keep things simple, lets grow the strand immediately upon creation. 
+  growStrand(strand, 0)
+  
   function growStrand(strand, vertexIndex) {
     var opacity = strand.material.attributes.opacity;
     opacity.value[vertexIndex++] = 1;
@@ -87,5 +77,4 @@ function ArcCloner() {
     }, 30)
 
   }
-
 }
