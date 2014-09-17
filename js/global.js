@@ -1,10 +1,10 @@
 var G = {}
 
 G.controlsActive = true;
+G.pHeight = 10
 
 
-
-G.bloom = 1.1
+G.bloom = .5
 
 
 G.texturesToLoad = [
@@ -29,14 +29,12 @@ G.scene = new THREE.Scene();
 G.position = new THREE.Vector3()
 G.windowSize = new THREE.Vector2(G.w, G.h);
 G.camera = new THREE.PerspectiveCamera(45, G.w / G.h, 1, 20000);
-G.camera.position.z = 1500
+G.scene.add(G.camera)
 G.renderer = new THREE.WebGLRenderer();
 G.clock = new THREE.Clock();
 G.time = G.clock.getElapsedTime()
 
-if (G.controlsActive) {
-  G.controls = new THREE.OrbitControls(G.camera, G.renderer.domElement);
-}
+
 
 G.stats = new Stats();
 G.gui = new dat.GUI({
@@ -97,9 +95,14 @@ G.container.appendChild(G.renderer.domElement)
 
 G.startArray = [];
 
+G.emitter = new EventEmitter();
+
 G.init = function() {
-
-
+  if (G.controlsActive) {
+  // G.controls = new THREE.OrbitControls(G.camera, G.renderer.domElement);
+    G.controls = new Controls();
+  }
+  G.arcCloner = new ArcCloner();
 
   this.text = new TextParticles({
     vertexShader: this.shaders.vs.text,
@@ -144,13 +147,21 @@ G.init = function() {
 
   var sky = new THREE.Mesh(skyGeo, skyMat);
   sky.rotation.x = Math.PI / 2
-  G.scene.add(sky)
+  // G.scene.add(sky)
 
   var skyGui = G.gui.addFolder('Sky Params');
   skyGui.add(skyParams.offset, 'value').name('offset');
   skyGui.add(skyParams.exponent, 'value').name('exponent');
 
   // this.scene.add(this.text.createTextParticles("Hello"));
+
+  var groundGeo = new THREE.PlaneGeometry(10000, 10000, 32, 32)
+  var groundMat = new THREE.MeshBasicMaterial({
+    wireframe: true
+  })
+  var ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI/2
+  G.scene.add(ground)
 
 }
 

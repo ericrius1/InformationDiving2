@@ -24,3 +24,15 @@ body{
   display:block; 
   overflow:hidden
 }
+
+#fabulator{
+  position:absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  border:solid 4px;
+  border-color: #00f;
+
+}
