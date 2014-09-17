@@ -44,7 +44,7 @@ var Controls = function() {
     document.addEventListener('mozpointerlockerror', pointerlockerror, false);
     document.addEventListener('webkitpointerlockerror', pointerlockerror, false);
 
-    document.addEventListener('click', function(event) {
+    document.getElementById('glContainer').addEventListener('click', function(event) {
 
 
 
