@@ -96,7 +96,9 @@ var Controls = function() {
   }
 
   function keyPressed(event){
-    G.emitter.trigger('toggleActivate', event.keyCode);
+    if(_.contains(_.keys(G.keyMapping), ''+event.keyCode)){
+      G.emitter.trigger('toggleActivate', event.keyCode);
+    }
   };
 
   $(document).on('mousedown', mouseHold);
