@@ -4,7 +4,7 @@ G.controlsActive = true;
 G.pHeight = 10
 
 
-G.bloom = .5
+G.bloom = 1.1
 
 
 G.texturesToLoad = [
@@ -50,7 +50,7 @@ G.stats.domElement.style.left = '0px';
 G.stats.domElement.style.top = '0px';
 
 document.body.appendChild(G.stats.domElement);
-G.container = document.getElementById('container');
+G.glContainer = document.getElementById('glContainer');
 //POST PROCESSING
 var postGui = G.gui.addFolder('PostProcessing');
 var postParams = {
@@ -90,7 +90,7 @@ G.dpr = {
 }
 
 G.renderer.setSize(G.w, G.h);
-G.container.appendChild(G.renderer.domElement)
+G.glContainer.appendChild(G.renderer.domElement)
 
 
 G.startArray = [];

@@ -14,7 +14,7 @@ body{
   z-index: 999;
 }
 
-#container{
+#glContainer{
   position:absolute; 
   left:0px; 
   top:0px; 

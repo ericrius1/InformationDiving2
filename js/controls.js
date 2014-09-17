@@ -1,5 +1,4 @@
 var Controls = function() {
-
   G.fpsControls = new THREE.PointerLockControls(G.camera);
   G.controlObject = G.fpsControls.getObject();
   // G.controlObject.position.z = -100;
@@ -86,8 +85,11 @@ var Controls = function() {
     G.fpsControls.update();
   }
 
+
   $(document).on('mousedown', function(){
-    console.log('sd')
-    G.emitter.trigger('arc');
+    G.emitter.trigger('startclonearc');
+  })
+  $(document).on('mouseup', function(){
+    G.emitter.trigger('stopclonearc')
   })
 }
