@@ -1,9 +1,11 @@
-G.ArcCloner = function() {
-  G.Primitive.call(this);
+G.ArcCloner = function(active) {
+  G.Primitive.apply(this, arguments);
   this._colorPalette = [0xfeee40, 0x17a1d2, 0xf22a5b, 0x9f0a5c];
   this._distanceFromPlayer = 200
   this._fakeObj = new THREE.Object3D() 
-  this.spawnInterval = 100;
+  this._spawnInterval = 100;
+  this.key = 1;
+  
 }
 
 G.ArcCloner.prototype = Object.create(G.Primitive.prototype);

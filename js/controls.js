@@ -94,12 +94,19 @@ var Controls = function() {
   function mouseRelease(){
     G.emitter.trigger('unspawn')
   }
+
+  function keyPressed(event){
+    G.emitter.trigger('toggleActivate', event.keyCode);
+  };
+
   $(document).on('mousedown', mouseHold);
   $(document).on('mouseup', mouseRelease);
 
-  $(document).on('keydown', function(event){
-    if(event.keyCode === 82){
-    }
+  $(document).on('keydown', keyPressed);
 
-  })
+}
+
+G.keyMapping = {
+  49: 1,
+  50: 2
 }

@@ -74,6 +74,8 @@ G.composer.addPass(G.effectFXAA);
 G.composer.addPass(G.effectBloom);
 G.composer.addPass(G.effectCopy);
 
+G.primitives = [];
+
 
 
 G.dT = {
@@ -102,9 +104,8 @@ G.init = function() {
   // G.controls = new THREE.OrbitControls(G.camera, G.renderer.domElement);
     G.controls = new Controls();
   }
-  G.arcCloner = new G.ArcCloner(this);
-  G.curveDots = new G.CurveDots(this);
-  G.curveDots.spawn();
+  G.primitives.push(new G.ArcCloner(false, 'arccloner'));
+  G.primitives.push(new G.CurveDots(true, 'curvedots')) ;
 
 
   this.text = new TextParticles({
@@ -175,7 +176,6 @@ G.animate = function() {
   if (this.controlsActive) {
     this.controls.update()
   }
-  this.arcCloner.update()
   this.stats.update()
   requestAnimationFrame(this.animate.bind(this));
   G.renderer.clear();
