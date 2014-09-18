@@ -1,16 +1,16 @@
-G.ArcCloner = function(active, key) {
+G.TextBox = function(active, key) {
   G.Primitive.apply(this, arguments);
   this._distanceFromPlayer = 200
     
 }
 
-G.ArcCloner.$menuItem =  $('<div>').addClass('item').text("1 : ArcCloner").appendTo($('#menu'));
+G.TextBox.$menuItem =  $('<div>').addClass('item').text("5 : TextBox").appendTo($('#menu'));
 
-G.ArcCloner.prototype = Object.create(G.Primitive.prototype);
+G.TextBox.prototype = Object.create(G.Primitive.prototype);
 
-G.ArcCloner.prototype.constructor = G.ArcCloner;
+G.TextBox.prototype.constructor = G.TextBox;
 
-G.ArcCloner.prototype.spawn = function(){
+G.TextBox.prototype.spawn = function(){
 
 
   var strandMat = new THREE.ShaderMaterial({

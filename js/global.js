@@ -161,7 +161,7 @@ G.init = function() {
     color: 0x0000ff,
     transparent: true,
     opacity: 0.1,
-    // wireframe: true
+    wireframe: true
   })
   var ground = new THREE.Mesh(groundGeo, groundMat);
   ground.rotation.x = -Math.PI / 2
@@ -212,6 +212,10 @@ G.onResize = function() {
   this.camera.aspect = this.ratio;
   this.camera.updateProjectionMatrix();
   this.renderer.setSize(this.w, this.h);
+
+  G.effectFXAA.uniforms[ 'resolution' ].value.set( 1 / this.w, 1 / this.h );
+
+  G.composer.reset();
 }
 
 G.createPrimitives = function() {
@@ -219,6 +223,8 @@ G.createPrimitives = function() {
   G.primitives['49'].constructor.$menuItem.addClass('active');
   G.primitives['50'] = new G.CurveDot();
   G.primitives['51'] = new G.DottedLine();
+  G.primitives['52'] = new G.TracerSpline();
+  G.primitives['53'] = new G.TextBox();
 }
 
 window.addEventListener('resize', G.onResize.bind(G), false);

@@ -7,6 +7,7 @@ var Controls = function() {
   // G.controlObject.position.z = -100;
   G.scene.add(G.fpsControls.getObject());
   var mouseTimeoutId;
+  var pLockEnabled = false;
 
   function teleport(point) {
     G.controlObject.position.set(point);
@@ -22,22 +23,22 @@ var Controls = function() {
       if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
 
         G.fpsControls.enabled = true;
-
-        if(firstTime){
-
+        if(!pLockEnabled){
+          $('#cursor').addClass('active')
           $(document).on('mousedown', mouseDown);
           $(document).on('mouseup', mouseRelease);
 
           $(document).on('keydown', keyPressed);
-          firstTime = false;
+          pLockEnabled = true
         }
 
 
 
-      } else {
-        console.log('OFF')
 
+      } else {
+        pLockEnabled = false;
         G.fpsControls.enabled = false;
+        $('#cursor').removeClass('active')
         $(document).off('mousedown');
         $(document).off('mouseup');
 
@@ -105,6 +106,7 @@ var Controls = function() {
 
   function mouseDown() {
     activePrimitive.spawn();
+    $('#cursor').addClass('held');
     timeoutId = setInterval(function(){
       activePrimitive.spawn();
     }, activePrimitive._spawnInterval);
@@ -112,6 +114,7 @@ var Controls = function() {
   }
 
   function mouseRelease() {
+    $('#cursor').removeClass('held');
     window.clearInterval(timeoutId)
   }
 

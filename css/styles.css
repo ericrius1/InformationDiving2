@@ -36,6 +36,12 @@ body{
   border:solid 4px;
   border-color: #00f;
 }
+#cursor.active{
+  border-color: #f0f;
+}
+#cursor.held{
+  border-color: #f00;
+}
 
 
 

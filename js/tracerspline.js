@@ -1,26 +1,26 @@
-G.DottedLine = function() {
+G.TracerSpline = function() {
   G.Primitive.apply(this, arguments);
   this._distanceFromPlayer = 200
-  this._spawnInterval = 0;
+  this._spawnInterval = 100;
   this._subdivisions = 100
   this._dotDensity = .1 //approximately every 10% of units create a dot
-  this.count = 0;
-
+  this._numSteps = 100;
+  this._step = 1/this._numSteps;
   var dotGeo = new THREE.SphereGeometry(0.5);
   this._dot = new THREE.Mesh(dotGeo, _.sample(this._materials));
-  this._dot.matrixAutoUpdate = false;
 
 }
  
 
-G.DottedLine.$menuItem =  $('<div>').addClass('item').text("3 : Dotted Line").appendTo($('#menu'));
+G.TracerSpline.$menuItem =  $('<div>').addClass('item').text("4: Tracer Spline").appendTo($('#menu'));
 
-G.DottedLine.prototype = Object.create(G.Primitive.prototype);
+G.TracerSpline.prototype = Object.create(G.Primitive.prototype);
 
-G.DottedLine.prototype.constructor = G.DottedLine;
+G.TracerSpline.prototype.constructor = G.TracerSpline;
 
 
-G.DottedLine.prototype.spawn = function(){
+G.TracerSpline.prototype.spawn = function(){
+  console.log("SPAWN")
 
   var strandMat = new THREE.ShaderMaterial({
     uniforms: {
@@ -44,35 +44,38 @@ G.DottedLine.prototype.spawn = function(){
 
 
   var strandGeometry = new THREE.Geometry()
-  var curve = new THREE.QuadraticBezierCurve3();
+  var points = [];
+  points.push(new THREE.Vector3(0, 1, 0))
+  points.push(new THREE.Vector3(G.rf(1,2), 0, 0))
+  points.push(new THREE.Vector3(G.rf(2,3), 1, 0))
+  points.push(new THREE.Vector3(G.rf(3, 4), 0, 0))
+  points.push(new THREE.Vector3(G.rf(4, 5), 1, 0))
+  var tracerPath = new THREE.SplineCurve3(points);
 
-  curve.v0 = new THREE.Vector3(0, 0, 0);
-  curve.v1 = new THREE.Vector3(1, 2, 0);
-  curve.v2 = new THREE.Vector3(2, 0, 0);
 
   var opacity = strandMat.attributes.opacity.value
-  for (var j = 0; j < this._subdivisions; j++) {
-    strandGeometry.vertices.push(curve.getPoint(j / this._subdivisions))
-    opacity[j] = 0.0;
+  for (var j = 0; j < 1; j+=this._step) {
+    var point = tracerPath.getPoint(j)
+    strandGeometry.vertices.push(point.clone())
+    opacity.push(0.0);
   }
   strandGeometry.dynamic = false
   var strand = new THREE.Line(strandGeometry, strandMat)
-  strand.scale.set(G.rf(10, 100), G.rf(10, 100), 1)
-  console.log('count: ',this.count++)
+  strand.material.linewidth = 2
+  strand.scale.set(G.rf(50, 100), G.rf(10, 100), 1)
   G.scene.add(strand)
 
+  //We need to encapsulate dot growing and shrinking
 
 
   //positioning
   this._fakeObj.position.copy(G.controlObject.position)
   var direction = G.fpsControls.getDirection()
   this._fakeObj.translateX(direction.x * this._distanceFromPlayer)
-  this._fakeObj.translateY(-10)
+  this._fakeObj.translateY(10)
   this._fakeObj.translateZ(direction.z * this._distanceFromPlayer)
   strand.position.copy(this._fakeObj.position);
-
-  strand.matrixAutoUpdate = false;
-  strand.updateMatrix();
+  strand.lookAt(G.controlObject.position);
 
   strand.material.attributes.opacity.needsUpdate = true
 
@@ -89,7 +92,6 @@ G.DottedLine.prototype.spawn = function(){
       worldPos.applyMatrix4(strand.matrixWorld)
       var newDot = this._dot.clone()
       newDot.position.copy(worldPos);
-      newDot.updateMatrix();
       G.scene.add(newDot);
       
     }
