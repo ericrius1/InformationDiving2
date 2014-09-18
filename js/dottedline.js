@@ -1,17 +1,24 @@
-G.ArcCloner = function(active, key) {
+G.DottedLine = function() {
   G.Primitive.apply(this, arguments);
   this._distanceFromPlayer = 200
-    
+  this._spawnInterval = 50;
+  this._subdivisions = 100
+  this._dotDensity = .1 //approximately every 10% of units create a dot
+
+  var dotGeo = new THREE.SphereGeometry(0.5);
+  this._dot = new THREE.Mesh(dotGeo, _.sample(this._materials));
+
 }
+ 
 
-G.ArcCloner.$menuItem =  $('<div>').addClass('item').text("1 : ArcCloner").appendTo($('#menu'));
+G.DottedLine.$menuItem =  $('<div>').addClass('item').text("3 : Dotted Line").appendTo($('#menu'));
 
-G.ArcCloner.prototype = Object.create(G.Primitive.prototype);
+G.DottedLine.prototype = Object.create(G.Primitive.prototype);
 
-G.ArcCloner.prototype.constructor = G.ArcCloner;
+G.DottedLine.prototype.constructor = G.DottedLine;
 
-G.ArcCloner.prototype.spawn = function(){
 
+G.DottedLine.prototype.spawn = function(){
 
   var strandMat = new THREE.ShaderMaterial({
     uniforms: {
@@ -33,7 +40,6 @@ G.ArcCloner.prototype.spawn = function(){
     depthWrite: false
   });
 
-  var SUBDIVISIONS = 100;
 
   var strandGeometry = new THREE.Geometry()
   var curve = new THREE.QuadraticBezierCurve3();
@@ -43,15 +49,17 @@ G.ArcCloner.prototype.spawn = function(){
   curve.v2 = new THREE.Vector3(2, 0, 0);
 
   var opacity = strandMat.attributes.opacity.value
-  for (var j = 0; j < SUBDIVISIONS; j++) {
-    strandGeometry.vertices.push(curve.getPoint(j / SUBDIVISIONS))
+  for (var j = 0; j < this._subdivisions; j++) {
+    strandGeometry.vertices.push(curve.getPoint(j / this._subdivisions))
     opacity[j] = 0.0;
   }
   strandGeometry.dynamic = false
   var strand = new THREE.Line(strandGeometry, strandMat)
   strand.scale.set(G.rf(10, 100), G.rf(10, 100), 1)
-  strand.rotation.set(0, G.rf(0, Math.PI * 2), 0)
   G.scene.add(strand)
+
+  //We need to encapsulate dot growing and shrinking
+
 
   //positioning
   this._fakeObj.position.copy(G.controlObject.position)
@@ -63,18 +71,29 @@ G.ArcCloner.prototype.spawn = function(){
 
   strand.material.attributes.opacity.needsUpdate = true
 
-  //To keep things simple, lets grow the strand immediately upon creation. 
-  growStrand(strand, 0)
+  //To keep things simple, lets grow the strand immediately upon creation.
+  setTimeout(function(){
+    growStrand(strand, 0)
+  }.bind(this), 0); 
   
-  function growStrand(strand, vertexIndex) {
+  var growStrand = function(strand, vertexIndex) {
     var opacity = strand.material.attributes.opacity;
+
+    if(Math.random() < this._dotDensity){
+      var worldPos = strand.geometry.vertices[vertexIndex].clone();
+      worldPos.applyMatrix4(strand.matrixWorld)
+      var newDot = this._dot.clone()
+      newDot.position.copy(worldPos);
+      G.scene.add(newDot);
+      
+    }
+
     opacity.value[vertexIndex++] = 1;
     opacity.needsUpdate = true
     if (vertexIndex === opacity.value.length) return
 
     setTimeout(function() {
       growStrand(strand, vertexIndex);
-    }, 30)
-
-  }
-}
+    }.bind(this), 30);
+  }.bind(this)
+};

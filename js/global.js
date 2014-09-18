@@ -217,7 +217,8 @@ G.onResize = function() {
 G.createPrimitives = function() {
   G.primitives['49'] = new G.ArcCloner();
   G.primitives['49'].constructor.$menuItem.addClass('active');
-  G.primitives['50'] = new G.CurveDots();
+  G.primitives['50'] = new G.CurveDot();
+  G.primitives['51'] = new G.DottedLine();
 }
 
 window.addEventListener('resize', G.onResize.bind(G), false);
