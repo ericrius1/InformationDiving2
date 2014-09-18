@@ -116,7 +116,6 @@ var Controls = function() {
   }
 
   function keyPressed(event) {
-    console.log('keypress'+ event.keyCode)
     if (event.keyCode in G.primitives) {
       _.each(G.primitives, function(primitive){
         primitive.constructor.$menuItem.removeClass('active')

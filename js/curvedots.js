@@ -3,6 +3,10 @@ G.CurveDots = function() {
   this._distanceFromPlayer = 200
   this._spawnInterval = 50;
   this._fakeObj = new THREE.Object3D() 
+  this.dotScale = 0.01;
+  this._subdivisions = 100
+
+  this._percentFullScale = .1 //dot will be full scale by 10% of curve
 
 }
  
@@ -13,6 +17,8 @@ G.CurveDots.$menuItem =  $('<div>').addClass('item').text("2 : Curve Dots").appe
 G.CurveDots.prototype = Object.create(G.Primitive.prototype);
 
 G.CurveDots.prototype.constructor = G.CurveDots;
+
+
 G.CurveDots.prototype.spawn = function(){
   G.Primitive.prototype.spawn.apply(this, arguments);
 
@@ -36,7 +42,6 @@ G.CurveDots.prototype.spawn = function(){
     depthWrite: false
   });
 
-  var SUBDIVISIONS = 100;
 
   var strandGeometry = new THREE.Geometry()
   var curve = new THREE.QuadraticBezierCurve3();
@@ -46,8 +51,8 @@ G.CurveDots.prototype.spawn = function(){
   curve.v2 = new THREE.Vector3(2, 0, 0);
 
   var opacity = strandMat.attributes.opacity.value
-  for (var j = 0; j < SUBDIVISIONS; j++) {
-    strandGeometry.vertices.push(curve.getPoint(j / SUBDIVISIONS))
+  for (var j = 0; j < this._subdivisions; j++) {
+    strandGeometry.vertices.push(curve.getPoint(j / this._subdivisions))
     opacity[j] = 0.0;
   }
   strandGeometry.dynamic = false
@@ -74,25 +79,26 @@ G.CurveDots.prototype.spawn = function(){
   //To keep things simple, lets grow the strand immediately upon creation.
   setTimeout(function(){
     growStrand(strand, 0)
-  }, 0) 
+  }.bind(this), 0); 
   
-  function growStrand(strand, vertexIndex) {
+  var growStrand = function(strand, vertexIndex) {
     if(vertexIndex === 0){
       G.scene.add(strand.dot)
     }
     var opacity = strand.material.attributes.opacity;
     var worldPos = strand.geometry.vertices[vertexIndex].clone();
     worldPos.applyMatrix4(strand.matrixWorld)
-    // if(worldPos.y > strand.dot.geometry.boundingSphere.radius){
-      strand.dot.position.set(worldPos.x, worldPos.y, worldPos.z);
-    // }
+    strand.dot.position.set(worldPos.x, worldPos.y, worldPos.z);
+    if(vertexIndex <= this._subdivisions * this._percentFullScale){
+      var scale = G.map(vertexIndex, 0, this._subdivisions * this._percentFullScale, 0.01, 1)
+      strand.dot.scale.set(scale, scale, scale);
+    }
     opacity.value[vertexIndex++] = 1;
     opacity.needsUpdate = true
     if (vertexIndex === opacity.value.length) return
 
     setTimeout(function() {
       growStrand(strand, vertexIndex);
-    }, 30)
-
-  }
-}
+    }.bind(this), 30);
+  }.bind(this)
+};
