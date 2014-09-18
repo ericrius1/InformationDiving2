@@ -20,7 +20,6 @@ G.TracerSpline.prototype.constructor = G.TracerSpline;
 
 
 G.TracerSpline.prototype.spawn = function(){
-  console.log("SPAWN")
 
   var strandMat = new THREE.ShaderMaterial({
     uniforms: {

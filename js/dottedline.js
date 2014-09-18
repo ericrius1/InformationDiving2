@@ -4,7 +4,9 @@ G.DottedLine = function() {
   this._spawnInterval = 0;
   this._subdivisions = 100
   this._dotDensity = .1 //approximately every 10% of units create a dot
+  this._growInterval = 30;
   this.count = 0;
+
 
   var dotGeo = new THREE.SphereGeometry(0.5);
   this._dot = new THREE.Mesh(dotGeo, _.sample(this._materials));
@@ -100,6 +102,7 @@ G.DottedLine.prototype.spawn = function(){
 
     setTimeout(function() {
       growStrand(strand, vertexIndex);
-    }.bind(this), 30);
+      this._growInterval= 1;
+    }.bind(this), this._growInterval);
   }.bind(this)
 };
