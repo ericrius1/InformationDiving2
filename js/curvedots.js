@@ -1,15 +1,17 @@
 G.CurveDots = function() {
-  this.name = 'CurveDots';
   G.Primitive.apply(this, arguments);
   this._distanceFromPlayer = 200
+  this._spawnInterval = 50;
   this._fakeObj = new THREE.Object3D() 
-}
 
-G.CurveDots.interval = 200;
+}
+ 
+
+// G.CurveDots.interval = 200;
+G.CurveDots.$menuItem =  $('<div>').addClass('item').text("2 : Curve Dots").appendTo($('#menu'));
 
 G.CurveDots.prototype = Object.create(G.Primitive.prototype);
 
-console.log(G.CurveDots.prototype.constructor)
 G.CurveDots.prototype.constructor = G.CurveDots;
 G.CurveDots.prototype.spawn = function(){
   G.Primitive.prototype.spawn.apply(this, arguments);

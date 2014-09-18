@@ -216,6 +216,7 @@ G.onResize = function() {
 
 G.createPrimitives = function() {
   G.primitives['49'] = new G.ArcCloner();
+  G.primitives['49'].constructor.$menuItem.addClass('active');
   G.primitives['50'] = new G.CurveDots();
 }
 

@@ -52,10 +52,6 @@ var Controls = function() {
 
 
     };
-    console.log('controls')
-    // document.addEventListener('pointerlockchange', function(){ console.log('reg')}, false);
-    document.addEventListener('mozpointerlockchange', function(){ console.log('moz')}, false);
-    document.addEventListener('webkitpointerlockchange', function(){ console.log('webkit')}, false);
     // Hook pointer lock state change events
     // document.addEventListener('pointerlockchange', pointerlockchange, false);
     document.addEventListener('mozpointerlockchange', pointerlockchange, false);
@@ -111,21 +107,24 @@ var Controls = function() {
     activePrimitive.spawn();
     timeoutId = setInterval(function(){
       activePrimitive.spawn();
-    }, activePrimitive.constructor.interval);
-    console.log('seting '+activePrimitive.constructor.interval);
+    }, activePrimitive._spawnInterval);
 
   }
 
   function mouseRelease() {
-    console.log('clearing '+timeoutId);
     window.clearInterval(timeoutId)
   }
 
   function keyPressed(event) {
     console.log('keypress'+ event.keyCode)
     if (event.keyCode in G.primitives) {
-      G.primitives[event.keyCode].active = true;
+      _.each(G.primitives, function(primitive){
+        primitive.constructor.$menuItem.removeClass('active')
+      })
+
       activePrimitive = G.primitives[event.keyCode];
+      activePrimitive.constructor.$menuItem.addClass('active');
+
      }
   };
 

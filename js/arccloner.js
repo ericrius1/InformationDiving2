@@ -1,12 +1,11 @@
 G.ArcCloner = function(active, key) {
-  this.name = 'ArcCloner';
   G.Primitive.apply(this, arguments);
   this._distanceFromPlayer = 200
   this._fakeObj = new THREE.Object3D() 
   
 }
 
-G.ArcCloner.interval = 200;
+G.ArcCloner.$menuItem =  $('<div>').addClass('item').text("1 : ArcCloner").appendTo($('#menu'));
 
 G.ArcCloner.prototype = Object.create(G.Primitive.prototype);
 
