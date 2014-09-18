@@ -45,7 +45,7 @@ body{
   z-index: 999;
 }
 
-.menu{
+#menu{
   position: absolute;
   bottom: 10px;
   color: white;

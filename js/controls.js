@@ -1,9 +1,12 @@
 var Controls = function() {
+  activePrimitive = G.primitives['49'];
+  var timeoutId;
+  var firstTime = true;
   G.fpsControls = new THREE.PointerLockControls(G.camera);
   G.controlObject = G.fpsControls.getObject();
   // G.controlObject.position.z = -100;
   G.scene.add(G.fpsControls.getObject());
-  var mouseTimeoutId ;
+  var mouseTimeoutId;
 
   function teleport(point) {
     G.controlObject.position.set(point);
@@ -16,28 +19,45 @@ var Controls = function() {
     var element = document.body;
 
     var pointerlockchange = function(event) {
-
       if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
 
         G.fpsControls.enabled = true;
 
+        if(firstTime){
+
+          $(document).on('mousedown', mouseDown);
+          $(document).on('mouseup', mouseRelease);
+
+          $(document).on('keydown', keyPressed);
+          firstTime = false;
+        }
+
 
 
       } else {
+        console.log('OFF')
 
         G.fpsControls.enabled = false;
+        $(document).off('mousedown');
+        $(document).off('mouseup');
+
+        $(document).off('keydown');
+
 
       }
 
-    }
+    };
 
     var pointerlockerror = function(event) {
 
 
-    }
-
+    };
+    console.log('controls')
+    // document.addEventListener('pointerlockchange', function(){ console.log('reg')}, false);
+    document.addEventListener('mozpointerlockchange', function(){ console.log('moz')}, false);
+    document.addEventListener('webkitpointerlockchange', function(){ console.log('webkit')}, false);
     // Hook pointer lock state change events
-    document.addEventListener('pointerlockchange', pointerlockchange, false);
+    // document.addEventListener('pointerlockchange', pointerlockchange, false);
     document.addEventListener('mozpointerlockchange', pointerlockchange, false);
     document.addEventListener('webkitpointerlockchange', pointerlockchange, false);
 
@@ -87,28 +107,27 @@ var Controls = function() {
   }
 
 
-  function mouseHold(){
-    G.emitter.trigger('spawn');
+  function mouseDown() {
+    activePrimitive.spawn();
+    timeoutId = setInterval(function(){
+      activePrimitive.spawn();
+    }, activePrimitive.constructor.interval);
+    console.log('seting '+activePrimitive.constructor.interval);
+
   }
 
-  function mouseRelease(){
-    G.emitter.trigger('unspawn')
+  function mouseRelease() {
+    console.log('clearing '+timeoutId);
+    window.clearInterval(timeoutId)
   }
 
-  function keyPressed(event){
-    if(_.contains(_.keys(G.keyMapping), ''+event.keyCode)){
-      G.emitter.trigger('toggleActivate', event.keyCode);
-    }
+  function keyPressed(event) {
+    console.log('keypress'+ event.keyCode)
+    if (event.keyCode in G.primitives) {
+      G.primitives[event.keyCode].active = true;
+      activePrimitive = G.primitives[event.keyCode];
+     }
   };
 
-  $(document).on('mousedown', mouseHold);
-  $(document).on('mouseup', mouseRelease);
 
-  $(document).on('keydown', keyPressed);
-
-}
-
-G.keyMapping = {
-  49: 1,
-  50: 2
 }

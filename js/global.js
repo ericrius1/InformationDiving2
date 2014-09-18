@@ -1,5 +1,3 @@
-
-
 G.controlsActive = true;
 G.pHeight = 10
 
@@ -74,7 +72,7 @@ G.composer.addPass(G.effectFXAA);
 G.composer.addPass(G.effectBloom);
 G.composer.addPass(G.effectCopy);
 
-G.primitives = [];
+G.primitives = {};
 
 
 
@@ -100,12 +98,11 @@ G.startArray = [];
 G.emitter = new EventEmitter();
 
 G.init = function() {
+  this.createPrimitives();
   if (G.controlsActive) {
-  // G.controls = new THREE.OrbitControls(G.camera, G.renderer.domElement);
+    // G.controls = new THREE.OrbitControls(G.camera, G.renderer.domElement);
     G.controls = new Controls();
   }
-  G.primitives.push(new G.ArcCloner(false, 'arccloner'));
-  G.primitives.push(new G.CurveDots(true, 'curvedots')) ;
 
 
   this.text = new TextParticles({
@@ -161,10 +158,13 @@ G.init = function() {
 
   var groundGeo = new THREE.PlaneGeometry(10000, 10000, 32, 32)
   var groundMat = new THREE.MeshBasicMaterial({
-    wireframe: true
+    color: 0x0000ff,
+    transparent: true,
+    opacity: 0.1,
+    // wireframe: true
   })
   var ground = new THREE.Mesh(groundGeo, groundMat);
-  ground.rotation.x = -Math.PI/2
+  ground.rotation.x = -Math.PI / 2
   G.scene.add(ground)
 
 }
@@ -212,6 +212,11 @@ G.onResize = function() {
   this.camera.aspect = this.ratio;
   this.camera.updateProjectionMatrix();
   this.renderer.setSize(this.w, this.h);
+}
+
+G.createPrimitives = function() {
+  G.primitives['49'] = new G.ArcCloner();
+  G.primitives['50'] = new G.CurveDots();
 }
 
 window.addEventListener('resize', G.onResize.bind(G), false);

@@ -1,46 +1,26 @@
-G.Primitive = function(active, menuId) {
-  this._spawnInterval = 50
-  this._timeoutId = null;
-  this.active = active || false;
-  this.$menuElement = $('#' + menuId);
+G.Primitive = function() {
+  this._spawnInterval = 1000
+  this._colorPalette = [0xEF2D5E, 0xFCED49, 0x1BA0D1, 0xA00B5F, 0x93B75E];
+  this._materials = []
+  _.each(this._colorPalette, function(colorValue) {
+    this._materials.push(new THREE.MeshBasicMaterial({
+      color: colorValue
+    }));
+  }.bind(this))
+
+  this.$menuElement = $('<div>').addClass('item').attr('id', Object.keys(G.primitives).length ).text(this.name).appendTo($('#menu'));
+
   if (this.active) {
     this.$menuElement.addClass('active');
   }
-  G.emitter.on('spawn', this.startSpawn.bind(this));
-  G.emitter.on('unspawn', this.unspawn.bind(this));
-  G.emitter.on('toggleActivate', this.toggleActivate.bind(this));
 }
 
-G.Primitive.prototype.update = function() {}
+
+G.Primitive.active = null;
+
+// G.Primitive.prototype.update = function() {}
 
 G.Primitive.prototype = {
   constructor: G.Primitive,
-  startSpawn: function() {
-    if (this.active) {
-      this.spawn();
-    }
-  },
-  spawn: function() {
-    if (this.active) {
-      this._timeoutId = setTimeout(function() {
-        this.spawn();
-      }.bind(this), this._spawnInterval);
-
-    }
-  },
-  unspawn: function() {
-    window.clearTimeout(this._timeoutId);
-  },
-
-  toggleActivate: function(keyCode) {
-    if(this.key === G.keyMapping[keyCode]){
-     this.$menuElement.addClass('active');
-     this.active = true;
-    }
-    else{
-      this.$menuElement.removeClass('active');
-      this.active = false;
-    }
-  },
-  update: function() {}
-}
+  spawn: function() {}
+};
