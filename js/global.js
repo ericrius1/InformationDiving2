@@ -154,7 +154,7 @@ G.init = function() {
   skyGui.add(skyParams.offset, 'value').name('offset');
   skyGui.add(skyParams.exponent, 'value').name('exponent');
 
-  // this.scene.add(this.text.createTextParticles("Hello"));
+
 
   var groundGeo = new THREE.PlaneGeometry(10000, 10000, 32, 32)
   var groundMat = new THREE.MeshBasicMaterial({
