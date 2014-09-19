@@ -10,6 +10,8 @@ G.TextBox = function(active, key) {
     letterWidth: 1
   });
   this._padding = 1
+  this._allCaps = true
+  this._fadeTime = 500;
 
 
 }
@@ -38,6 +40,9 @@ G.TextBox.prototype.spawn = function() {
     return text;
   }
   var string = maketext(_.random(4, 10));
+  if(this._allCaps === true){
+    string.toUpperCase();
+  }
 
   var lineGeo = new THREE.Geometry();
   lineGeo.vertices.push(new THREE.Vector3(0, 0, 0));
@@ -62,8 +67,8 @@ G.TextBox.prototype.spawn = function() {
   G.scene.add(line)
 
   var bsd = {
-    scaleX: line.scale.x,
-    scaleY: line.scale.y,
+    scaleX: 0.001,
+    scaleY: 0.001,
   }
   var bfd = {
     scaleX: this._padding + string.length,
@@ -71,25 +76,40 @@ G.TextBox.prototype.spawn = function() {
   }
 
   var stretchTween = new TWEEN.Tween(bsd).
-  to(bfd, 500).
+  to(bfd, this._fadeTime).
   onUpdate(function() {
     line.scale.set(bsd.scaleX, bsd.scaleY, 1);
-  }).start();
+  }).start().
+  yoyo(true).
+  delay(500).
+  repeat(1);
 
-  stretchTween.onComplete(function() {
-    var csd = {
-      opacity: 0
-    }
+  stretchTween.onComplete(function(){
+    G.scene.remove(line);
+  })
 
-    var fsd = {
-      opacity: 1
-    }
-    var fadeTween = new TWEEN.Tween(csd).
-    to(fsd, 2000).
-    easing(TWEEN.Easing.Cubic.Out).
-    onUpdate(function() {
-      text.material.uniforms.opacity.value = csd.opacity
-    }.bind(this)).start()
-  }.bind(this))
+  var csd = {
+    opacity: 0,
+    scale: 0.001
+  }
+
+  var fsd = {
+    opacity: 1,
+    scale: 1
+  }
+  var textTween = new TWEEN.Tween(csd).
+  to(fsd, this._fadeTime + 100).
+  easing(TWEEN.Easing.Cubic.Out).
+  onUpdate(function() {
+    text.material.uniforms.opacity.value = csd.opacity
+    text.scale.set(csd.scale, 1, csd.scale);
+  }.bind(this)).
+  start().
+  yoyo(true).
+  delay(300).
+  repeat(1);
+  textTween.onComplete(function(){
+    G.scene.remove(text);
+  })
 
 }
