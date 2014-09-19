@@ -54,8 +54,7 @@ void main(){
   float xGL = gl_PointCoord.x;
   float yGL = gl_PointCoord.y;
 
-  float xOG = xGL - xP;
-  float yOG = yGL - yP;
+
 
   float xF = x - xO - widthOffset + gl_PointCoord.x *totalSize; //(wP + xP)*w; //* w * .1;
   float yF = y + yO + glyphBelow - (1.-gl_PointCoord.y)* totalSize; 

@@ -1,7 +1,7 @@
 G.DottedLine = function() {
   G.Primitive.apply(this, arguments);
   this._distanceFromPlayer = 200
-  this._spawnInterval = 0;
+  this._spawnInterval = 100;
   this._subdivisions = 100
   this._dotDensity = .1 //approximately every 10% of units create a dot
   this._growInterval = 30;
