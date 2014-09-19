@@ -1,6 +1,14 @@
 G.TextBox = function(active, key) {
   G.Primitive.apply(this, arguments);
   this._distanceFromPlayer = 50
+  this._textSpawner = new TextParticles({
+    vertexShader: G.shaders.vs.text,
+    fragmentShader: G.shaders.fs.text,
+    lineLength: 50,
+    lineHeight: 1,
+    letterWidth: 1
+  });
+  this._text = this._textSpawner.createTextParticles(G.rf(1, 10).toString().substr(0, 4))
 
 }
 
@@ -17,10 +25,10 @@ G.TextBox.prototype.spawn = function() {
   this._fakeObj.translateX(direction.x * this._distanceFromPlayer)
   this._fakeObj.translateY(G.rf(5, 15))
   this._fakeObj.translateZ(direction.z * this._distanceFromPlayer)
-  var text = G.text.createTextParticles(G.rf(1, 10).toString().substr(0, 4))
-  text.position.copy(this._fakeObj.position);
-  text.lookAt(G.controlObject.position)
-  G.scene.add(text);
+  this._text.position.copy(this._fakeObj.position);
+  this._text.lookAt(G.controlObject.position)
+  this._text.material.opacity = 0.0
+  G.scene.add(this._text);
 
   var csd = {
     opacity: 0
@@ -31,8 +39,9 @@ G.TextBox.prototype.spawn = function() {
   }
 
   var fadeTween = new TWEEN.Tween(csd).
-    to(fsd, 2000).
-    onUpdate(function(){
-      debugger
-    }.bind(this)).start()
+  to(fsd, 2000).
+  onUpdate(function() {
+    this._text.material.uniforms.opacity.value = csd.opacity
+    console.log
+  }.bind(this)).start()
 }
