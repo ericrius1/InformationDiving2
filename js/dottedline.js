@@ -102,7 +102,6 @@ G.DottedLine.prototype.spawn = function(){
 
     setTimeout(function() {
       growStrand(strand, vertexIndex);
-      this._growInterval= 1;
     }.bind(this), this._growInterval);
   }.bind(this)
 };

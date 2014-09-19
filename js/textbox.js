@@ -5,12 +5,10 @@ G.TextBox = function(active, key) {
   this._textSpawner = new TextParticles({
     vertexShader: G.shaders.vs.text,
     fragmentShader: G.shaders.fs.text,
-    lineLength: 50,
-    lineHeight: 1,
-    letterWidth: 1
+
   });
   this._padding = 1
-  this._allCaps = true
+  this._allCaps = false
   this._fadeTime = 500;
 
 
@@ -40,6 +38,7 @@ G.TextBox.prototype.spawn = function() {
     return text;
   }
   var string = maketext(_.random(4, 10));
+  var string =  'hello'
   if(this._allCaps === true){
     string.toUpperCase();
   }
@@ -52,6 +51,7 @@ G.TextBox.prototype.spawn = function() {
   lineGeo.vertices.push(new THREE.Vector3(0, 0, 0));
 
   var text = this._textSpawner.createTextParticles(string)
+  console.log('text width' + this._textSpawner.width);
   text.material.uniforms.opacity.value = 0;
   text.position.copy(this._fakeObj.position);
   text.lookAt(G.controlObject.position)
@@ -71,8 +71,8 @@ G.TextBox.prototype.spawn = function() {
     scaleY: 0.001,
   }
   var bfd = {
-    scaleX: this._padding + string.length,
-    scaleY: 2
+    scaleX: this._padding + text.width,
+    scaleY: 3
   }
 
   var stretchTween = new TWEEN.Tween(bsd).
@@ -102,7 +102,7 @@ G.TextBox.prototype.spawn = function() {
   easing(TWEEN.Easing.Cubic.Out).
   onUpdate(function() {
     text.material.uniforms.opacity.value = csd.opacity
-    text.scale.set(csd.scale, 1, csd.scale);
+    text.scale.set(csd.scale, csd.scale, csd.scale);
   }.bind(this)).
   start().
   yoyo(true).
