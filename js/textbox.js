@@ -21,4 +21,18 @@ G.TextBox.prototype.spawn = function() {
   text.position.copy(this._fakeObj.position);
   text.lookAt(G.controlObject.position)
   G.scene.add(text);
+
+  var csd = {
+    opacity: 0
+  }
+
+  var fsd = {
+    opacity: 1
+  }
+
+  var fadeTween = new TWEEN.Tween(csd).
+    to(fsd, 2000).
+    onUpdate(function(){
+      debugger
+    }.bind(this)).start()
 }
