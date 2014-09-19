@@ -1,12 +1,9 @@
 G.TextBox = function(active, key) {
   G.Primitive.apply(this, arguments);
   this._distanceFromPlayer = 50
-  this._spawnInterval = 100
-  this._textSpawner = new TextParticles({
-    vertexShader: G.shaders.vs.text,
-    fragmentShader: G.shaders.fs.text,
-
-  });
+  this._spawnInterval = 500
+  this._textScale = 5;
+  this._textSpawner = new TextCreator(this._textScale);
   this._padding = 1
   this._allCaps = false
   this._fadeTime = 500;
@@ -25,7 +22,6 @@ G.TextBox.prototype.spawn = function() {
   this._fakeObj.position.copy(G.controlObject.position)
   var direction = G.fpsControls.getDirection()
   this._fakeObj.translateX(direction.x * this._distanceFromPlayer)
-  this._fakeObj.translateY(G.rf(5, 15))
   this._fakeObj.translateZ(direction.z * this._distanceFromPlayer)
 
   function maketext(numChars) {
@@ -38,32 +34,41 @@ G.TextBox.prototype.spawn = function() {
     return text;
   }
   var string = maketext(_.random(4, 10));
-  var string =  'hello'
-  if(this._allCaps === true){
+  var string = 'hello'
+  if (this._allCaps === true) {
     string.toUpperCase();
   }
 
+
+  var textMesh = this._textSpawner.createMesh('hello world hahahaha', {});
+  textMesh.position.copy(this._fakeObj.position);
+  G.scene.add(textMesh);
+  var helper = new THREE.BoundingBoxHelper(textMesh, 0xff00ff)
+  helper.update()
+  textMesh.lookAt(G.controlObject.position);
+  // G.scene.add(helper)
+  var box = helper.box
+
   var lineGeo = new THREE.Geometry();
+  var width = (box.max.x - box.min.x) + this._padding;
+  var height = (box.max.y - box.min.y) + this._padding;
   lineGeo.vertices.push(new THREE.Vector3(0, 0, 0));
-  lineGeo.vertices.push(new THREE.Vector3(1, 0, 0));
-  lineGeo.vertices.push(new THREE.Vector3(1, 1, 0));
-  lineGeo.vertices.push(new THREE.Vector3(0, 1, 0));
+  lineGeo.vertices.push(new THREE.Vector3(width, 0, 0));
+  lineGeo.vertices.push(new THREE.Vector3(width, height, 0));
+  lineGeo.vertices.push(new THREE.Vector3(0, height, 0));
   lineGeo.vertices.push(new THREE.Vector3(0, 0, 0));
 
-  var text = this._textSpawner.createTextParticles(string)
-  console.log('text width' + this._textSpawner.width);
-  text.material.uniforms.opacity.value = 0;
-  text.position.copy(this._fakeObj.position);
-  text.lookAt(G.controlObject.position)
-  text.translateX(1.5)
-  G.scene.add(text);
-
-  var lineMat = new THREE.LineBasicMaterial();
+  var lineMat = new THREE.LineBasicMaterial({
+    depthwrite: true,
+    depthtest: true,
+    linewidth: 2
+  });
 
   var line = new THREE.Line(lineGeo, lineMat);
-  line.position.copy(this._fakeObj.position);
-  line.position.y -= 2;
+  line.position.copy(this._fakeObj.position)
   line.lookAt(G.controlObject.position);
+  line.translateX(-width / 2)
+  line.translateY(-height / 2)
   G.scene.add(line)
 
   var bsd = {
@@ -71,8 +76,8 @@ G.TextBox.prototype.spawn = function() {
     scaleY: 0.001,
   }
   var bfd = {
-    scaleX: this._padding + text.width,
-    scaleY: 3
+    scaleX: 1,
+    scaleY: 1
   }
 
   var stretchTween = new TWEEN.Tween(bsd).
@@ -84,32 +89,33 @@ G.TextBox.prototype.spawn = function() {
   delay(500).
   repeat(1);
 
-  stretchTween.onComplete(function(){
+  stretchTween.onComplete(function() {
     G.scene.remove(line);
   })
 
-  var csd = {
-    opacity: 0,
-    scale: 0.001
+  var tsd = {
+    scaleX: 0.01,
+    scaleY: 0.01
   }
 
-  var fsd = {
-    opacity: 1,
-    scale: 1
+  var ted = {
+    scaleX: this._textScale,
+    scaleY: this._textScale
   }
-  var textTween = new TWEEN.Tween(csd).
-  to(fsd, this._fadeTime + 100).
-  easing(TWEEN.Easing.Cubic.Out).
+
+  var textTween = new TWEEN.Tween(tsd).
+  to(ted, this._fadeTime).
   onUpdate(function() {
-    text.material.uniforms.opacity.value = csd.opacity
-    text.scale.set(csd.scale, csd.scale, csd.scale);
-  }.bind(this)).
-  start().
+    textMesh.scale.set(tsd.scaleX, tsd.scaleY, 1);
+  }).start().
   yoyo(true).
-  delay(300).
+  delay(500).
   repeat(1);
-  textTween.onComplete(function(){
-    G.scene.remove(text);
+
+  textTween.onComplete(function() {
+    G.scene.remove(textMesh);
   })
+
+
 
 }
