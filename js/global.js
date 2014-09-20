@@ -220,6 +220,7 @@ G.createPrimitives = function() {
   G.primitives['51'] = new G.DottedLine();
   G.primitives['52'] = new G.TracerSpline();
   G.primitives['53'] = new G.TextBox();
+  G.primitives['54'] = new G.SlicePlanet();
 }
 
 window.addEventListener('resize', G.onResize.bind(G), false);
