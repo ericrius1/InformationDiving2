@@ -1,9 +1,10 @@
 G.SlicePlanet = function(active, key) {
   G.Primitive.apply(this, arguments);
   this._distanceFromPlayer = 200
-  this._startRadius = 20;
+  this._startRadius = 10;
   this._currentRadius = this._startRadius;
-  this._numSegments = 100;
+  this._numStartingSegments = 50
+  this._numSegments = this._numStartingSegments;
   this._spawnInterval = 100
 
   this._material = new THREE.PointCloudMaterial({
@@ -20,7 +21,6 @@ G.SlicePlanet.prototype.constructor = G.SlicePlanet;
 
 G.SlicePlanet.prototype.spawn = function() {
 
-  var numSegments = this._numSegments;
   var geometry = new THREE.Geometry();
   for (var i = 0; i < this._numSegments; i++) {
     var theta = i / this._numSegments * Math.PI * 2;
@@ -35,16 +35,20 @@ G.SlicePlanet.prototype.spawn = function() {
   this._fakeObj.position.copy(G.controlObject.position)
   var direction = G.fpsControls.getDirection()
   this._fakeObj.translateX(direction.x * this._distanceFromPlayer)
-  this._fakeObj.translateY(-10)
   this._fakeObj.translateZ(direction.z * this._distanceFromPlayer)
+  this._fakeObj.translateY(direction.y * this._distanceFromPlayer)
   pointCloud.position.copy(this._fakeObj.position);
   pointCloud.lookAt(G.controlObject.position);
 
+  console.log('yPos', G.controlObject.children[0].rotation.x)
+
   this._currentRadius += 5
+  // this._numSegments *= 1.5
 }
 
 G.SlicePlanet.prototype.unspawn = function(){
   this._currentRadius = this._startRadius;
   this._material = this._material.clone()
   this._material.color.setHex(_.sample(this._colorPalette));
+  this._numSegments = this._numStartingSegments;
 }
