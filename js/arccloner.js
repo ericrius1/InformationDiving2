@@ -1,6 +1,7 @@
 G.ArcCloner = function(active, key) {
   G.Primitive.apply(this, arguments);
   this._distanceFromPlayer = 200
+  this._spawnInterval = 40;
     
 }
 

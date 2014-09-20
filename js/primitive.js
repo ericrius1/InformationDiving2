@@ -16,5 +16,6 @@ G.Primitive = function() {
 
 G.Primitive.prototype = {
   constructor: G.Primitive,
-  spawn: function() {}
+  spawn:   function() {},
+  unspawn: function() {}
 };

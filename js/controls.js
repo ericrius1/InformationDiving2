@@ -116,6 +116,7 @@ var Controls = function() {
   function mouseRelease() {
     $('#cursor').removeClass('held');
     window.clearInterval(timeoutId)
+    activePrimitive.unspawn();
   }
 
   function keyPressed(event) {

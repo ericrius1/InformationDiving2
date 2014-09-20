@@ -67,9 +67,10 @@ G.CurveDot.prototype.spawn = function(){
   this._fakeObj.position.copy(G.controlObject.position)
   var direction = G.fpsControls.getDirection()
   this._fakeObj.translateX(direction.x * this._distanceFromPlayer)
-  this._fakeObj.translateY(-10)
+  // this._fakeObj.translateY(-10)
   this._fakeObj.translateZ(direction.z * this._distanceFromPlayer)
   strand.position.copy(this._fakeObj.position);
+  strand.position.y = 0
 
   strand.material.attributes.opacity.needsUpdate = true
 
