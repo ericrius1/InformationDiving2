@@ -3,8 +3,7 @@ G.FresnalShader = function(active, key) {
   this._distanceFromPlayer = 200
 
   this._spawnInterval = 100
-  this._odTheta = 0.05
-  this._dTheta = this._odTheta;
+  this._dTheta = 0.01;
 
 
 
@@ -24,28 +23,34 @@ G.FresnalShader.prototype.spawn = function() {
   var geometry = new THREE.Geometry();
   var R = 100
 
-  for (var y = 0; y < 100; y += 5) {
-    for (var theta = 0; theta < Math.PI/2;) {
+  for (var y = 0; y < 100; y += 1) {
+    for (var theta = 0; theta < Math.PI / 2;) {
       var radius = Math.sqrt(R * R - y * y);
       var x = radius * Math.cos(theta);
       var z = radius * Math.sin(theta);
       // geometry.vertices.push(new THREE.Vector3(x, y, z))
 
+      var p1 = G.map(theta, 0, Math.PI/2, .5, 1);
+      var p2 = G.map(y, 0, 100, 1, 0.5);
+      if(p1 < Math.random() && p2 < Math.random()){
 
-      geometry.vertices.push(new THREE.Vector3(x, -y, -z));
-      geometry.vertices.push(new THREE.Vector3(-x, -y, -z));
-      
-      geometry.vertices.push(new THREE.Vector3(x, -y, z));
-      geometry.vertices.push(new THREE.Vector3(-x, -y, z));
+        geometry.vertices.push(new THREE.Vector3(x, -y, -z));
+        geometry.vertices.push(new THREE.Vector3(-x, -y, -z));
 
+        geometry.vertices.push(new THREE.Vector3(x, -y, z));
+        geometry.vertices.push(new THREE.Vector3(-x, -y, z));
 
-      console.log('y', y)
-      console.log(radius - y)
+        geometry.vertices.push(new THREE.Vector3(x, y, -z));
+        geometry.vertices.push(new THREE.Vector3(-x, y, -z));
+
+        geometry.vertices.push(new THREE.Vector3(x, y, z));
+        geometry.vertices.push(new THREE.Vector3(-x, y, z));
+      }
+
 
       theta += this._dTheta
-      this._dTheta = Math.min(this._dTheta+.01, 1)
+
     }
-    this._dTheta = this._odTheta;
   }
   var pCloud = new THREE.PointCloud(geometry)
   this._fakeObj.position.copy(G.controlObject.position)
