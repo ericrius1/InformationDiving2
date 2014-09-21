@@ -17,5 +17,10 @@ G.Primitive = function() {
 G.Primitive.prototype = {
   constructor: G.Primitive,
   spawn:   function() {},
-  unspawn: function() {}
+  unspawn: function() {},
+  update:  function() {}
 };
+
+// G.Primitive.addComponent = function(component){
+//   console.log('yar')
+// }

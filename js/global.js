@@ -164,12 +164,12 @@ G.init = function() {
 }
 
 G.animate = function() {
-  this.time = this.clock.getElapsedTime();
   this.dT.value = this.clock.getDelta();
   this.timer.value += this.dT.value
   if (this.controlsActive) {
     this.controls.update()
   }
+  G.primitives['54'].update()
   TWEEN.update()
   this.stats.update()
   requestAnimationFrame(this.animate.bind(this));
@@ -221,6 +221,7 @@ G.createPrimitives = function() {
   G.primitives['52'] = new G.TracerSpline();
   G.primitives['53'] = new G.TextBox();
   G.primitives['54'] = new G.SlicePlanet();
+  G.primitives['55'] = new G.FresnalShader();
 }
 
 window.addEventListener('resize', G.onResize.bind(G), false);

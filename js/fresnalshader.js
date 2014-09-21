@@ -1,4 +1,4 @@
-G.SlicePlanet = function(active, key) {
+G.FresnalShader = function(active, key) {
   G.Primitive.apply(this, arguments);
   this._distanceFromPlayer = 200
   this._startRadius = 10;
@@ -6,9 +6,6 @@ G.SlicePlanet = function(active, key) {
   this._numStartingSegments = 50
   this._numSegments = this._numStartingSegments;
   this._spawnInterval = 100
-  this._mergedGeo = new THREE.Geometry()
-  this._tempSlices = [];
-  this._planetSlices = []
 
   this._material = new THREE.PointCloudMaterial({
     color: _.sample(this._colorPalette)
@@ -16,13 +13,13 @@ G.SlicePlanet = function(active, key) {
 
 }
 
-G.SlicePlanet.$menuItem = $('<div>').addClass('item').text("6 : Slice Planets").appendTo($('#menu'));
+G.FresnalShader.$menuItem = $('<div>').addClass('item').text("7 : FresnalShader").appendTo($('#menu'));
 
-G.SlicePlanet.prototype = Object.create(G.Primitive.prototype);
+G.FresnalShader.prototype = Object.create(G.Primitive.prototype);
 
-G.SlicePlanet.prototype.constructor = G.SlicePlanet;
+G.FresnalShader.prototype.constructor = G.FresnalShader;
 
-G.SlicePlanet.prototype.spawn = function() {
+G.FresnalShader.prototype.spawn = function() {
 
   var geometry = new THREE.Geometry();
   for (var i = 0; i < this._numSegments; i++) {
@@ -41,41 +38,17 @@ G.SlicePlanet.prototype.spawn = function() {
   this._fakeObj.translateZ(direction.z * this._distanceFromPlayer)
   this._fakeObj.translateY(direction.y * this._distanceFromPlayer)
   pointCloud.position.copy(this._fakeObj.position);
-
   pointCloud.lookAt(G.controlObject.position);
-  pointCloud.updateMatrix()
-  this._tempSlices.push(pointCloud);
-  this._mergedGeo.merge(pointCloud.geometry);
 
+  console.log('yPos', G.controlObject.children[0].rotation.x)
 
   this._currentRadius += 5
   this._numSegments *= 1.1
 }
 
-G.SlicePlanet.prototype.unspawn = function() {
-
-  //replace slices with one mesh for performance and ease of manipulation
-  var pointCloud = new THREE.PointCloud(this._mergedGeo, this._material);
-  for (var i = 0; i < this._tempSlices.length; i++) {
-    G.scene.remove(this._tempSlices[i]);
-  }
-  G.scene.add(pointCloud);
-  pointCloud.position.copy(this._fakeObj.position);
-
-  pointCloud.lookAt(G.controlObject.position);
-  this._planetSlices.push(pointCloud);
-
-
-  //reset vars
+G.FresnalShader.prototype.unspawn = function(){
   this._currentRadius = this._startRadius;
-  this._numSegments = this._numStartingSegments;
   this._material = this._material.clone()
   this._material.color.setHex(_.sample(this._colorPalette));
-  this._mergedGeo = new THREE.Geometry();
-}
-
-G.SlicePlanet.prototype.update = function() {
-  for (var i = 0; i < this._planetSlices.length; i++) {
-    this._planetSlices[i].rotation.y += G.dT.value
-  }
+  this._numSegments = this._numStartingSegments;
 }
