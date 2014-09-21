@@ -76,6 +76,6 @@ G.SlicePlanet.prototype.unspawn = function() {
 
 G.SlicePlanet.prototype.update = function() {
   for (var i = 0; i < this._planetSlices.length; i++) {
-    this._planetSlices[i].rotation.y += G.dT.value
+    this._planetSlices[i].rotation.y += G.dT.value * .1
   }
 }

@@ -21,6 +21,3 @@ G.Primitive.prototype = {
   update:  function() {}
 };
 
-// G.Primitive.addComponent = function(component){
-//   console.log('yar')
-// }

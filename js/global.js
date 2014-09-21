@@ -164,6 +164,7 @@ G.init = function() {
 }
 
 G.animate = function() {
+  //Be careful with calling getElapsedTime and delta together. Will fuck up delta
   this.dT.value = this.clock.getDelta();
   this.timer.value += this.dT.value
   if (this.controlsActive) {
