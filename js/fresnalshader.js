@@ -1,6 +1,6 @@
 G.FresnalShader = function(active, key) {
   G.Primitive.apply(this, arguments);
-  this._distanceFromPlayer = 200
+  this._distanceFromPlayer = 400
 
   this._spawnInterval = 100
   this._dTheta = 0.01;
@@ -30,6 +30,8 @@ G.FresnalShader.prototype.spawn = function() {
       var z = radius * Math.sin(theta);
       // geometry.vertices.push(new THREE.Vector3(x, y, z))
 
+      //probabilties decrease as we move towards sphere edges in relation to camera
+      
       var p1 = G.map(theta, 0, Math.PI/2, .5, 1);
       var p2 = G.map(y, 0, 100, 1, 0.5);
       if(p1 < Math.random() && p2 < Math.random()){
@@ -52,7 +54,7 @@ G.FresnalShader.prototype.spawn = function() {
 
     }
   }
-  var pCloud = new THREE.PointCloud(geometry)
+  var pCloud = new THREE.PointCloud(geometry, this._material)
   this._fakeObj.position.copy(G.controlObject.position)
   var direction = G.fpsControls.getDirection()
   this._fakeObj.translateX(direction.x * this._distanceFromPlayer)
@@ -66,5 +68,7 @@ G.FresnalShader.prototype.spawn = function() {
 }
 
 G.FresnalShader.prototype.unspawn = function() {
+  this._material = this._material.clone()
+  this._material.color.setHex(_.sample(this._colorPalette));
 
 }
