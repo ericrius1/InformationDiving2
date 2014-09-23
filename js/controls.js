@@ -2,23 +2,30 @@ var Controls = function() {
   activePrimitive = G.primitives['49'];
   var timeoutId;
   var firstTime = true;
+  var controlArray = [];
   G.fpsControls = new THREE.PointerLockControls(G.camera);
+  G.fpsControls.name = 'fps';
+  controlArray.push(G.fpsControls)
   G.controlObject = G.fpsControls.getObject();
   G.scene.add(G.fpsControls.getObject());
-  
+
   G.orbitControls = new THREE.OrbitControls(G.camera, G.renderer.domElement);
-  G.orbitControls.enabled = false;
+  // G.orbitControls.enabled = false;
+  G.orbitControls.name = 'orbit';
+  controlArray.push(G.orbitControls)
+
+  var currentControlsIndex = 0;
 
   var mouseTimeoutId;
   var pLockEnabled = false;
   var activeControls = G.fpsControls;
 
   var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
-  
+
   // Ask the browser to release the pointer
-document.exitPointerLock = document.exitPointerLock ||
-         document.mozExitPointerLock ||
-         document.webkitExitPointerLock;
+  document.exitPointerLock = document.exitPointerLock ||
+    document.mozExitPointerLock ||
+    document.webkitExitPointerLock;
 
 
   if (havePointerLock) {
@@ -27,9 +34,9 @@ document.exitPointerLock = document.exitPointerLock ||
 
     var pointerlockchange = function(event) {
       if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
-
-        G.fpsControls.enabled = true;
+        console.log('pointer change')
         if (!pLockEnabled) {
+          G.fpsControls.enabled = true;
           $('#cursor').addClass('active')
           $(document).on('mousedown', mouseDown);
           $(document).on('mouseup', mouseRelease);
@@ -41,14 +48,12 @@ document.exitPointerLock = document.exitPointerLock ||
 
 
       } else {
-        console.log('washh')
+        console.log('Pointer lock disabling')
         pLockEnabled = false;
         G.fpsControls.enabled = false;
         $('#cursor').removeClass('active')
         $(document).off('mousedown', mouseDown);
         $(document).off('mouseup', mouseRelease);
-
-        $(document).off('keydown', keyPressed);
 
 
       }
@@ -62,7 +67,6 @@ document.exitPointerLock = document.exitPointerLock ||
 
     var requestPointerLock = function() {
 
-      console.log('CLICK')
 
       // Ask the browser to lock the pointer
       element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
@@ -103,7 +107,6 @@ document.exitPointerLock = document.exitPointerLock ||
   document.addEventListener('mozpointerlockerror', pointerlockerror, false);
   document.addEventListener('webkitpointerlockerror', pointerlockerror, false);
 
-  document.addEventListener('click', requestPointerLock, false);
 
 
 
@@ -138,13 +141,25 @@ document.exitPointerLock = document.exitPointerLock ||
 
     }
 
+    //Toggle controls!
     if (event.keyCode === 67) {
-      document.exitPointerLock()
-      activeControls = G.orbitControls;
-      activeControls.enabled = true;
-      G.fpsControls.enabled = false;
-      G.camera.position.set(0, 0, 30)
-      document.removeEventListener('click', requestPointerLock);
+      currentControlsIndex++;
+      if(currentControlsIndex === controlArray.length){
+        currentControlsIndex = 0;
+      }
+      activeControls = controlArray[currentControlsIndex];
+      console.log(activeControls.name)
+      if(activeControls.name === 'fps'){
+        requestPointerLock();
+        G.camera.position.set(0, 0, 0)
+        G.camera.rotation.set(0, 0, 0)
+      }
+      else{
+        G.camera.position.set(0, 0, 30)
+        document.exitPointerLock()
+        document.removeEventListener('click', requestPointerLock);
+      }
+
 
     }
   };
