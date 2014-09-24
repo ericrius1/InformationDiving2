@@ -26,7 +26,7 @@ G.ratio = G.w / G.h;
 G.scene = new THREE.Scene();
 G.position = new THREE.Vector3()
 G.windowSize = new THREE.Vector2(G.w, G.h);
-G.camera = new THREE.PerspectiveCamera(45, G.w / G.h, 1, 20000);
+G.camera = new THREE.PerspectiveCamera(45, G.w / G.h, .01, 2000);
 G.scene.add(G.camera)
 G.renderer = new THREE.WebGLRenderer();
 G.clock = new THREE.Clock();
@@ -223,6 +223,7 @@ G.createPrimitives = function() {
   G.primitives['53'] = new G.TextBox();
   G.primitives['54'] = new G.SlicePlanet();
   G.primitives['55'] = new G.FresnalShader();
+  G.primitives['56'] = new G.DotSpiral();
 }
 
 window.addEventListener('resize', G.onResize.bind(G), false);
