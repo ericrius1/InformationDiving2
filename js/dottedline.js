@@ -23,6 +23,7 @@ G.DottedLine.prototype.constructor = G.DottedLine;
 
 
 G.DottedLine.prototype.spawn = function(){
+  console.log(this._colorPalette)
 
   var strandMat = new THREE.ShaderMaterial({
     uniforms: {
@@ -60,7 +61,6 @@ G.DottedLine.prototype.spawn = function(){
   strandGeometry.dynamic = false
   var strand = new THREE.Line(strandGeometry, strandMat)
   strand.scale.set(G.rf(10, 100), G.rf(10, 100), 1)
-  console.log('count: ',this.count++)
   G.scene.add(strand)
 
 
