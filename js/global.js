@@ -20,15 +20,17 @@ G.loader.onStart = function() {
   this.animate()
 }.bind(G);
 
+G.NEAR = 0.01
+G.FAR = 1e10;
 G.w = window.innerWidth;
 G.h = window.innerHeight;
 G.ratio = G.w / G.h;
 G.scene = new THREE.Scene();
 G.position = new THREE.Vector3()
 G.windowSize = new THREE.Vector2(G.w, G.h);
-G.camera = new THREE.PerspectiveCamera(45, G.w / G.h, .01, 2000);
+G.camera = new THREE.PerspectiveCamera(45, G.w / G.h, G.NEAR, G.FAR);
 G.scene.add(G.camera)
-G.renderer = new THREE.WebGLRenderer();
+G.renderer = new THREE.WebGLRenderer({logarithmicDepthBuffer: true});
 G.clock = new THREE.Clock();
 G.time = G.clock.getElapsedTime()
 
@@ -106,7 +108,6 @@ G.init = function() {
 
 
 
-
   //Skydome
   var skyParams = {
     offset: {
@@ -147,6 +148,13 @@ G.init = function() {
   var skyGui = G.gui.addFolder('Sky Params');
   skyGui.add(skyParams.offset, 'value').name('offset');
   skyGui.add(skyParams.exponent, 'value').name('exponent');
+
+  //PRIMITIVE PARAMS
+  G.primitiveParams = {
+    scale: 1
+  }
+  var primitiveGui = G.gui.addFolder('Primitive Params');
+  primitiveGui.add(G.primitiveParams, 'scale').name('scale');
 
 
 
@@ -209,7 +217,7 @@ G.onResize = function() {
   this.camera.updateProjectionMatrix();
   this.renderer.setSize(this.w, this.h);
 
-  G.effectFXAA.uniforms[ 'resolution' ].value.set( 1 / this.w, 1 / this.h );
+  G.effectFXAA.uniforms['resolution'].value.set(1 / this.w, 1 / this.h);
 
   G.composer.reset();
 }

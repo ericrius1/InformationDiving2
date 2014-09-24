@@ -23,7 +23,6 @@ G.DottedLine.prototype.constructor = G.DottedLine;
 
 
 G.DottedLine.prototype.spawn = function(){
-  console.log(this._colorPalette)
 
   var strandMat = new THREE.ShaderMaterial({
     uniforms: {
