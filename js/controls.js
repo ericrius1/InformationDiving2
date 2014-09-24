@@ -34,26 +34,12 @@ var Controls = function() {
 
     var pointerlockchange = function(event) {
       if (document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element) {
-        console.log('pointer change')
-        if (!pLockEnabled) {
-          G.fpsControls.enabled = true;
-          $('#cursor').addClass('active')
-          $(document).on('mousedown', mouseDown);
-          $(document).on('mouseup', mouseRelease);
-
-          $(document).on('keydown', keyPressed);
-          pLockEnabled = true
-        }
-
+        G.fpsControls.enabled = true;
 
 
       } else {
-        console.log('Pointer lock disabling')
-        pLockEnabled = false;
+        console.log('disable controls')
         G.fpsControls.enabled = false;
-        $('#cursor').removeClass('active')
-        $(document).off('mousedown', mouseDown);
-        $(document).off('mouseup', mouseRelease);
 
 
       }
@@ -109,7 +95,6 @@ var Controls = function() {
 
 
 
-
   this.update = function() {
     activeControls.update();
   }
@@ -143,26 +128,32 @@ var Controls = function() {
 
     //Toggle controls!
     if (event.keyCode === 67) {
-      currentControlsIndex++;
-      if(currentControlsIndex === controlArray.length){
-        currentControlsIndex = 0;
-      }
-      activeControls = controlArray[currentControlsIndex];
-      console.log(activeControls.name)
-      if(activeControls.name === 'fps'){
-        requestPointerLock();
-        G.camera.position.set(0, 0, 0)
-        G.camera.rotation.set(0, 0, 0)
-      }
-      else{
-        G.camera.position.set(0, 0, 30)
-        document.exitPointerLock()
-        document.removeEventListener('click', requestPointerLock);
-      }
-
-
+      toggleControls()
     }
   };
+
+  function toggleControls() {
+    currentControlsIndex++;
+    if (currentControlsIndex === controlArray.length) {
+      currentControlsIndex = 0;
+    }
+    activeControls = controlArray[currentControlsIndex];
+    console.log(activeControls.name)
+    if (activeControls.name === 'fps') {
+      requestPointerLock();
+      G.camera.position.set(0, 0, 0)
+      G.camera.rotation.set(0, 0, 0)
+    } else {
+      G.camera.position.set(0, 0, 30)
+      document.exitPointerLock()
+    }
+  }
+
+
+
+  $(document).on('keydown', keyPressed);
+  $(document).on('mousedown', mouseDown);
+  $(document).on('mouseup', mouseRelease);
 
 
 }
