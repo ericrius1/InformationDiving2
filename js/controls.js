@@ -5,7 +5,6 @@ var Controls = function() {
   var controlArray = [];
   G.fpsControls = new THREE.PointerLockControls(G.camera);
   G.fpsControls.name = 'fps';
-  controlArray.push(G.fpsControls)
   G.controlObject = G.fpsControls.getObject();
   G.scene.add(G.fpsControls.getObject());
 
@@ -13,12 +12,14 @@ var Controls = function() {
   // G.orbitControls.enabled = false;
   G.orbitControls.name = 'orbit';
   controlArray.push(G.orbitControls)
+  controlArray.push(G.fpsControls)
+  var activeControls = controlArray[0];
+  G.camera.position.z = -30
 
   var currentControlsIndex = 0;
 
   var mouseTimeoutId;
   var pLockEnabled = false;
-  var activeControls = G.fpsControls;
 
   var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
 
@@ -40,8 +41,6 @@ var Controls = function() {
       } else {
         console.log('disable controls')
         G.fpsControls.enabled = false;
-
-
       }
 
     };
@@ -101,6 +100,7 @@ var Controls = function() {
 
 
   function mouseDown() {
+    if(activeControls.name!=='fps')return
     activePrimitive.spawn();
     $('#cursor').addClass('held');
     timeoutId = setInterval(function() {
@@ -138,14 +138,15 @@ var Controls = function() {
       currentControlsIndex = 0;
     }
     activeControls = controlArray[currentControlsIndex];
-    console.log(activeControls.name)
-    if (activeControls.name === 'fps') {
+    if(activeControls.name === 'fps') {
       requestPointerLock();
       G.camera.position.set(0, 0, 0)
       G.camera.rotation.set(0, 0, 0)
-    } else {
+      $('#cursor').css('width', '15px')
+    } 
+    else {
       G.camera.position.set(0, 0, 30)
-      document.exitPointerLock()
+      $('#cursor').css('width', '100px')
     }
   }
 
