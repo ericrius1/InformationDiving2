@@ -2,36 +2,40 @@ G.Boids = function() {
   G.Primitive.apply(this, arguments);
   this.boids = [];
   this._numBoids = 10;
-  this._particleCount = 100000
+  this._particleCount = 10000
+  this._trails = [];
   this.spheres = []
-  this._currentVertexIndex = 0;
   this._drawTrail = true;
 
   //Set up boids
   for (var i = 0; i < this._numBoids; i++) {
     var boid = new Boid()
+    console.log('yar')
     boid.position.x = Math.random() * 400 - 200;
     boid.position.y = Math.random() * 100 + 50
     boid.position.z = Math.random() * 400 - 200;
     boid.velocity.x = Math.random() * 2 - 1;
     boid.velocity.y = Math.random() * 2 - 1;
     boid.velocity.z = Math.random() * 2 - 1;
-    boid.setGoal(new THREE.Vector3(0, 50, -1000))
+    boid.setGoal(new THREE.Vector3(0, 50, -500))
     this.boids.push(boid);
     var sphere = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 16))
     this.spheres.push(sphere);
     G.scene.add(sphere);
+
+    var geo = new THREE.Geometry()
+    var pos = new THREE.Vector3(0, 0, 1e11)
+      //Create particle pool
+    for (var j = 0; j < this._particleCount; j++) {
+      geo.vertices.push(pos.clone());
+    }
+    var pointCloud = new THREE.PointCloud(geo);
+    pointCloud.material.color.setHex(_.sample(this._colorPalette));
+    pointCloud.currentVertexIndex = 0;
+    G.scene.add(pointCloud)
+    sphere.pointCloud = pointCloud;
   }
 
-  var geo = new THREE.Geometry()
-  var pos = new THREE.Vector3(0, 0, 1e11)
-    //Create particle pool
-  for (var i = 0; i < this._particleCount; i++) {
-    geo.vertices.push(pos.clone());
-  }
-  this._pointCloud = new THREE.PointCloud(geo);
-  this._pointCloud.material.color.setHex(_.sample(this._colorPalette));
-  G.scene.add(this._pointCloud)
 }
 
 G.Boids.$menuItem = $('<div>').addClass('item').text('9 : Boids').appendTo($('#menu'));
@@ -45,15 +49,15 @@ G.Boids.prototype.spawn = function() {
 G.Boids.prototype.update = function() {
   for (var i = 0, il = this.spheres.length; i < il; i++) {
     this.boids[i].run(this.boids);
-    this.spheres[i].position.copy(this.boids[i].position);
-    if (this._drawTrail) {
-      this._pointCloud.geometry.vertices[this._currentVertexIndex++].copy(this.boids[i].position)
-      if (this._currentVertexIndex >= this._pointCloud.geometry.vertices.length) {
-        this._drawTrail = false;
-      }
+    var sphere = this.spheres[i];
+    var pointCloud = sphere.pointCloud;
+    sphere.position.copy(this.boids[i].position);
+    sphere.pointCloud.geometry.vertices[sphere.pointCloud.currentVertexIndex++].copy(this.boids[i].position)
+    sphere.pointCloud.geometry.verticesNeedUpdate = true;
+    if(sphere.pointCloud.currentVertexIndex >= pointCloud.geometry.vertices.length ){
+      sphere.pointCloud.currentVertexIndex = 0;
     }
   }
-  this._pointCloud.geometry.verticesNeedUpdate = true;
 }
 
 
