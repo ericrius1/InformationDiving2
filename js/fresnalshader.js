@@ -62,6 +62,7 @@ G.FresnalShader.prototype.spawn = function() {
   this._fakeObj.translateY(direction.y * this._distanceFromPlayer)
   pCloud.position.copy(this._fakeObj.position);
   pCloud.lookAt(G.controlObject.position);
+  pCloud.scale.multiplyScalar(G.primitiveParams.scale);
   G.scene.add(pCloud);
 
 

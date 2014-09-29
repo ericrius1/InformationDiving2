@@ -1,4 +1,3 @@
-G.controlsActive = true;
 G.pHeight = 10
 
 
@@ -21,7 +20,7 @@ G.loader.onStart = function() {
 }.bind(G);
 
 G.NEAR = 0.01
-G.FAR = 1e10;
+G.FAR = 1e27;
 G.w = window.innerWidth;
 G.h = window.innerHeight;
 G.ratio = G.w / G.h;
@@ -52,11 +51,11 @@ G.stats.domElement.style.top = '0px';
 document.body.appendChild(G.stats.domElement);
 G.glContainer = document.getElementById('glContainer');
 //POST PROCESSING
-var postGui = G.gui.addFolder('PostProcessing');
+var postFolder = G.gui.addFolder('PostProcessing');
 var postParams = {
   blur: 1.1
 }
-postGui.add(postParams, 'blur').name('blur').onChange(function() {
+postFolder.add(postParams, 'blur').name('blur').onChange(function() {
   G.effectBloom.copyUniforms.opacity.value = postParams.blur;
 
 });
@@ -101,12 +100,8 @@ G.emitter = new EventEmitter();
 
 G.init = function() {
   this.createPrimitives();
-  if (G.controlsActive) {
-    // G.controls = new THREE.OrbitControls(G.camera, G.renderer.domElement);
-    G.controls = new Controls();
-  }
-
-
+  G.controls = new Controls();
+  G.hud = new Hud();
 
   //Skydome
   var skyParams = {
@@ -145,16 +140,17 @@ G.init = function() {
   sky.rotation.x = Math.PI / 2
   // G.scene.add(sky)
 
-  var skyGui = G.gui.addFolder('Sky Params');
-  skyGui.add(skyParams.offset, 'value').name('offset');
-  skyGui.add(skyParams.exponent, 'value').name('exponent');
+  var skyFolder = G.gui.addFolder('Sky Params');
+  skyFolder.add(skyParams.offset, 'value').name('offset');
+  skyFolder.add(skyParams.exponent, 'value').name('exponent');
 
   //PRIMITIVE PARAMS
   G.primitiveParams = {
     scale: 1
   }
-  var primitiveGui = G.gui.addFolder('Primitive Params');
-  primitiveGui.add(G.primitiveParams, 'scale').name('scale');
+  var primitiveFolder = G.gui.addFolder('Primitive Params');
+  primitiveFolder.add(G.primitiveParams, 'scale').step(10).min(1).max(G.FAR/1000).listen()
+  primitiveFolder.open();
 
 
 
@@ -169,16 +165,17 @@ G.init = function() {
   ground.rotation.x = -Math.PI / 2
   G.scene.add(ground)
 
+  G.onResize()
+
 }
 
 G.animate = function() {
   //Be careful with calling getElapsedTime and delta together. Will fuck up delta
   this.dT.value = this.clock.getDelta();
   this.timer.value += this.dT.value
-  if (this.controlsActive) {
-    this.controls.update()
-  }
-  G.primitives['54'].update()
+  this.controls.update()
+  G.primitives['54'].update();
+  G.primitives['57'].update();
   TWEEN.update()
   this.stats.update()
   requestAnimationFrame(this.animate.bind(this));
@@ -209,6 +206,11 @@ G.loadTexture = function(name, file) {
 }
 
 G.onResize = function() {
+  console.log("RESIZE");
+  if(G.overlay){
+    G.overlay.scale.set( G.w/1000, G.h/1000,1);
+    G.overlay.position.z = -G.h*0.1 /(2*Math.tan( G.camera.fov*(Math.PI/360)) );
+  }
   this.w = window.innerWidth;
   this.h = window.innerHeight;
   this.ratio = this.w / this.h
@@ -224,7 +226,7 @@ G.onResize = function() {
 
 G.createPrimitives = function() {
   G.primitives['49'] = new G.ArcCloner();
-  G.primitives['49'].constructor.$menuItem.addClass('active');
+  // G.primitives['49'].constructor.$menuItem.addClass('active');
   G.primitives['50'] = new G.CurveDot();
   G.primitives['51'] = new G.DottedLine();
   G.primitives['52'] = new G.TracerSpline();
@@ -232,6 +234,7 @@ G.createPrimitives = function() {
   G.primitives['54'] = new G.SlicePlanet();
   G.primitives['55'] = new G.FresnalShader();
   G.primitives['56'] = new G.DotSpiral();
+  G.primitives['57'] = new G.Boids();
 }
 
 window.addEventListener('resize', G.onResize.bind(G), false);

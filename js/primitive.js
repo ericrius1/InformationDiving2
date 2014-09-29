@@ -3,12 +3,14 @@ G.Primitive = function() {
   this._materials = []
   this._spawnInterval = 100;
   this._distanceFromPlayer = 200;
-  this._fakeObj = new THREE.Object3D() 
+  this._fakeObj = new THREE.Object3D()
   _.each(this._colorPalette, function(colorValue) {
-    this._materials.push(new THREE.MeshBasicMaterial({
-      color: colorValue
-    }));
-  }.bind(this))
+    this._materials.push(
+      new THREE.MeshBasicMaterial({
+        color: colorValue
+      })
+    )
+  }.bind(this));
 
 }
 
@@ -16,8 +18,7 @@ G.Primitive = function() {
 
 G.Primitive.prototype = {
   constructor: G.Primitive,
-  spawn:   function() {},
+  spawn: function() {},
   unspawn: function() {},
-  update:  function() {}
+  update: function() {}
 };
-

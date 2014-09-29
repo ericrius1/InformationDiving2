@@ -35,6 +35,7 @@ body{
   height: 15px;
   border:solid 4px;
   border-color: #00f;
+  opacity: 0.5
 }
 #cursor.active{
   border-color: #f0f;

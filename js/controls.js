@@ -39,7 +39,6 @@ var Controls = function() {
 
 
       } else {
-        console.log('disable controls')
         G.fpsControls.enabled = false;
       }
 
@@ -99,7 +98,7 @@ var Controls = function() {
   }
 
 
-  function mouseDown() {
+  function mouseDown(event) {
     if(activeControls.name!=='fps')return
     activePrimitive.spawn();
     $('#cursor').addClass('held');
@@ -126,6 +125,15 @@ var Controls = function() {
 
     }
 
+    if(event.keyCode === 38){
+      console.log('SCALE', G.primitiveParams.scale);
+      if(G.primitiveParams.scale < G.FAR/1000){
+        G.primitiveParams.scale *= 10;
+      }
+    }
+    if(event.keyCode === 40){
+      G.primitiveParams.scale/=10;
+    }
     //Toggle controls!
     if (event.keyCode === 67) {
       toggleControls()
@@ -152,9 +160,11 @@ var Controls = function() {
 
 
 
+  //only for when we are in pointer land
+  $(document.body).on('mousedown', mouseDown);
+  $(document.body).on('mouseup', mouseRelease);
+
   $(document).on('keydown', keyPressed);
-  $(document).on('mousedown', mouseDown);
-  $(document).on('mouseup', mouseRelease);
 
 
 }
