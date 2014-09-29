@@ -1,10 +1,11 @@
 G.Boids = function() {
   G.Primitive.apply(this, arguments);
   this.boids = [];
-  this._numBoids = 50;
+  this._numBoids = 10;
   this._particleCount = 100000
   this.spheres = []
   this._currentVertexIndex = 0;
+  this._drawTrail = true;
 
   //Set up boids
   for (var i = 0; i < this._numBoids; i++) {
@@ -23,11 +24,13 @@ G.Boids = function() {
   }
 
   var geo = new THREE.Geometry()
-  //Create particle pool
-  for(var i = 0; i < this._particleCount; i++){
-    geo.vertices.push(new THREE.Vector3(0, 0, 1e11));
+  var pos = new THREE.Vector3(0, 0, 1e11)
+    //Create particle pool
+  for (var i = 0; i < this._particleCount; i++) {
+    geo.vertices.push(pos.clone());
   }
   this._pointCloud = new THREE.PointCloud(geo);
+  this._pointCloud.material.color.setHex(_.sample(this._colorPalette));
   G.scene.add(this._pointCloud)
 }
 
@@ -43,9 +46,14 @@ G.Boids.prototype.update = function() {
   for (var i = 0, il = this.spheres.length; i < il; i++) {
     this.boids[i].run(this.boids);
     this.spheres[i].position.copy(this.boids[i].position);
-    this._pointCloud.geometry.vertices[this._currentVertexIndex++].copy(this.boids[i].position)
-    this._pointCloud.geometry.verticesNeedUpdate = true;
+    if (this._drawTrail) {
+      this._pointCloud.geometry.vertices[this._currentVertexIndex++].copy(this.boids[i].position)
+      if (this._currentVertexIndex >= this._pointCloud.geometry.vertices.length) {
+        this._drawTrail = false;
+      }
+    }
   }
+  this._pointCloud.geometry.verticesNeedUpdate = true;
 }
 
 
