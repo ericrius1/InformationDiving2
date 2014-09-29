@@ -1,10 +1,34 @@
 G.Boids = function() {
   G.Primitive.apply(this, arguments);
   this.boids = [];
-  this.numBoids = 10;
-  for(var i = 0; i < this.numBoids; i++){
-    this.boids.push(new Boid());
+  this._numBoids = 50;
+  this._particleCount = 100000
+  this.spheres = []
+  this._currentVertexIndex = 0;
+
+  //Set up boids
+  for (var i = 0; i < this._numBoids; i++) {
+    var boid = new Boid()
+    boid.position.x = Math.random() * 400 - 200;
+    boid.position.y = Math.random() * 100 + 50
+    boid.position.z = Math.random() * 400 - 200;
+    boid.velocity.x = Math.random() * 2 - 1;
+    boid.velocity.y = Math.random() * 2 - 1;
+    boid.velocity.z = Math.random() * 2 - 1;
+    boid.setGoal(new THREE.Vector3(0, 50, -1000))
+    this.boids.push(boid);
+    var sphere = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 16))
+    this.spheres.push(sphere);
+    G.scene.add(sphere);
   }
+
+  var geo = new THREE.Geometry()
+  //Create particle pool
+  for(var i = 0; i < this._particleCount; i++){
+    geo.vertices.push(new THREE.Vector3(0, 0, 1e11));
+  }
+  this._pointCloud = new THREE.PointCloud(geo);
+  G.scene.add(this._pointCloud)
 }
 
 G.Boids.$menuItem = $('<div>').addClass('item').text('9 : Boids').appendTo($('#menu'));
@@ -15,13 +39,14 @@ G.Boids.prototype.spawn = function() {
   console.log('spawn');
 }
 
-G.Boids.prototype.update = function(){
-  _.each(this.boids, function(boid){
-    boid.run(this.boids);
-  }, this);
+G.Boids.prototype.update = function() {
+  for (var i = 0, il = this.spheres.length; i < il; i++) {
+    this.boids[i].run(this.boids);
+    this.spheres[i].position.copy(this.boids[i].position);
+    this._pointCloud.geometry.vertices[this._currentVertexIndex++].copy(this.boids[i].position)
+    this._pointCloud.geometry.verticesNeedUpdate = true;
+  }
 }
-
-
 
 
 
@@ -32,7 +57,7 @@ var Boid = function() {
     _height = 500,
     _depth = 200,
     _goal, _neighborhoodRadius = 100,
-    _maxSpeed = 4,
+    _maxSpeed = 2,
     _maxSteerForce = 0.1,
     _avoidWalls = false;
 
@@ -115,11 +140,9 @@ var Boid = function() {
   this.flock = function(boids) {
 
     if (_goal) {
-
       _acceleration.add(this.reach(_goal, 0.005));
 
     }
-
     _acceleration.add(this.alignment(boids));
     _acceleration.add(this.cohesion(boids));
     _acceleration.add(this.separation(boids));
@@ -265,6 +288,7 @@ var Boid = function() {
       posSum.divideScalar(count);
 
     }
+
 
     steer.subVectors(posSum, this.position);
 
