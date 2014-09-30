@@ -34,6 +34,10 @@ G.renderer = new THREE.WebGLRenderer({logarithmicDepthBuffer: true});
 G.clock = new THREE.Clock();
 G.time = G.clock.getElapsedTime()
 
+G.vrControls = new THREE.VRControls(G.camera);
+G.effect = new THREE.VREffect(G.renderer);
+G.effect.setSize(G.w, G.h)
+
 
 
 G.stats = new Stats();
@@ -181,8 +185,9 @@ G.animate = function() {
   TWEEN.update()
   this.stats.update()
   requestAnimationFrame(this.animate);
-  G.renderer.clear();
-  G.composer.render();
+  // G.renderer.clear();
+  // G.composer.render();
+  G.effect.render(G.scene, G.camera)
 
 }.bind(G)
 

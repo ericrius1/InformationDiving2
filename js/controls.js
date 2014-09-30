@@ -137,6 +137,11 @@ var Controls = function() {
     //Toggle controls!
     if (event.keyCode === 67) {
       toggleControls()
+
+    }
+    if(event.keyCode === 86){
+      G.effect.setFullScreen( true );
+
     }
   };
 
