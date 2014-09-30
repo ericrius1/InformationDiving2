@@ -103,7 +103,7 @@ G.init = function() {
   this.createPrimitives();
   G.controls = new Controls();
   G.hud = new Hud();
-  G.hud.addSphere();
+  // G.hud.addSphere();
 
   //Skydome
   var skyParams = {
