@@ -5,7 +5,8 @@ G.bloom = 1.1
 
 
 G.texturesToLoad = [
-  ['ubuntuMono', 'img/ubuntuMono.png']
+  ['ubuntuMono', 'img/ubuntuMono.png'],
+  ['dot', 'img/dot.png']
 ]
 
 G.TEXTURES = {};

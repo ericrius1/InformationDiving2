@@ -1,37 +1,45 @@
 G.Boids = function() {
   G.Primitive.apply(this, arguments);
-  this.boids = [];
+  this._boids = [];
   this._numBoids = 10;
+  this._spawnInterval = 200;
   this._particleCount = 10000
+  this._distanceFromPlayer = 400
   this._trails = [];
   this.spheres = []
-  this._drawTrail = true;
+  this._activated = false;
 
   //Set up boids
   for (var i = 0; i < this._numBoids; i++) {
-    var boid = new Boid()
-    console.log('yar')
+    var boid = new Boid();
     boid.position.x = Math.random() * 400 - 200;
     boid.position.y = Math.random() * 100 + 50
-    boid.position.z = Math.random() * 400 - 200;
+    boid.position.z = Math.random() * -400
     boid.velocity.x = Math.random() * 2 - 1;
     boid.velocity.y = Math.random() * 2 - 1;
     boid.velocity.z = Math.random() * 2 - 1;
     boid.setGoal(new THREE.Vector3(0, 50, -500))
-    this.boids.push(boid);
+    this._boids.push(boid);
     var sphere = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 16))
+    sphere.position.y = 1000;
     this.spheres.push(sphere);
     G.scene.add(sphere);
 
     var geo = new THREE.Geometry()
-    var pos = new THREE.Vector3(0, 0, 1e11)
+    //TONY: WHY DOES THIS INITIAL POSITION AFFECT WHETHER I CAN VIEW PARTICLES AFTER I CHANGE THEIR POSITION?
+    var pos = new THREE.Vector3(0, 0, 0)
       //Create particle pool
     for (var j = 0; j < this._particleCount; j++) {
       geo.vertices.push(pos.clone());
     }
-    var pointCloud = new THREE.PointCloud(geo);
-    pointCloud.material.color.setHex(_.sample(this._colorPalette));
+    var material = new THREE.PointCloudMaterial({
+      color: _.sample(this._colorPalette),
+      size: 2.0,
+    })
+    var pointCloud = new THREE.PointCloud(geo, material);
+    // pointCloud.sortParticles = true
     pointCloud.currentVertexIndex = 0;
+    pointCloud.frustumCulled = false;
     G.scene.add(pointCloud)
     sphere.pointCloud = pointCloud;
   }
@@ -43,18 +51,32 @@ G.Boids.prototype = Object.create(G.Primitive.prototype);
 G.Boids.prototype.constructor = G.Boids;
 
 G.Boids.prototype.spawn = function() {
-  console.log('spawn');
+  this._activated = true;
+  this._fakeObj.position.copy(G.controlObject.position)
+  this._direction = G.fpsControls.getDirection()
+  this._fakeObj.translateX(this._direction.x * this._distanceFromPlayer)
+  this._fakeObj.translateZ(this._direction.z * this._distanceFromPlayer)
+  this._fakeObj.translateY(this._direction.y * this._distanceFromPlayer)
+  for(var i = 0; i < this._boids.length; i++){
+    this._boids[i].setGoal(this._fakeObj.position)
+  }
+}
+
+G.Boids.prototype.unspawn = function(){
+  this._activated = false;
 }
 
 G.Boids.prototype.update = function() {
+  if(!this._activated)return;
+
   for (var i = 0, il = this.spheres.length; i < il; i++) {
-    this.boids[i].run(this.boids);
+    this._boids[i].run(this._boids);
     var sphere = this.spheres[i];
     var pointCloud = sphere.pointCloud;
-    sphere.position.copy(this.boids[i].position);
-    sphere.pointCloud.geometry.vertices[sphere.pointCloud.currentVertexIndex++].copy(this.boids[i].position)
-    sphere.pointCloud.geometry.verticesNeedUpdate = true;
-    if(sphere.pointCloud.currentVertexIndex >= pointCloud.geometry.vertices.length ){
+    sphere.position.copy(this._boids[i].position);
+    pointCloud.geometry.vertices[pointCloud.currentVertexIndex++].copy(this._boids[i].position)
+    pointCloud.geometry.verticesNeedUpdate = true;
+    if (pointCloud.currentVertexIndex >= pointCloud.geometry.vertices.length) {
       sphere.pointCloud.currentVertexIndex = 0;
     }
   }
@@ -69,7 +91,7 @@ var Boid = function() {
     _height = 500,
     _depth = 200,
     _goal, _neighborhoodRadius = 100,
-    _maxSpeed = 2,
+    _maxSpeed = 1,
     _maxSteerForce = 0.1,
     _avoidWalls = false;
 

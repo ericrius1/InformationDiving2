@@ -23,10 +23,11 @@ G.DotSpiral.prototype.spawn = function() {
   if (this._beginningSpawn) {
     this.geometry = new THREE.Geometry();
     for (var i = 0; i < 10000; i++) {
-      this.geometry.vertices.push(new THREE.Vector3(0, 0, 1e11));
+      this.geometry.vertices.push(new THREE.Vector3(0, 0, 0));
     }
     this._pointCloud = new THREE.PointCloud(this.geometry, this._material);
     this._pointCloud.scale.multiplyScalar(G.primitiveParams.scale);
+    this._pointCloud.frustumCulled = false;
     G.scene.add(this._pointCloud);
     this._fakeObj.position.copy(G.controlObject.position)
     this._direction = G.fpsControls.getDirection()
