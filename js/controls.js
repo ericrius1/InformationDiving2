@@ -141,7 +141,13 @@ var Controls = function() {
     }
     if(event.keyCode === 86){
       G.effect.setFullScreen( true );
-
+    }
+    if(event.keyCode === 66){
+      G.vrMode = !G.vrMode;
+      G.renderer.enableScissorTest( false );
+      G.renderer.setViewport( 0, 0, G.w, G.h);
+      G.renderer.setScissor( 0, 0, G.w, G.h );
+      G.enderer.clear();
     }
   };
 

@@ -32,6 +32,7 @@ G.camera = new THREE.PerspectiveCamera(45, G.w / G.h, G.NEAR, G.FAR);
 G.scene.add(G.camera)
 G.renderer = new THREE.WebGLRenderer({logarithmicDepthBuffer: true});
 G.clock = new THREE.Clock();
+G.vrMode = false;
 G.time = G.clock.getElapsedTime()
 
 G.vrControls = new THREE.VRControls(G.camera);
@@ -187,7 +188,12 @@ G.animate = function() {
   requestAnimationFrame(this.animate);
   // G.renderer.clear();
   // G.composer.render();
-  G.effect.render(G.scene, G.camera)
+  if(G.vrMode){
+    G.effect.render(G.scene, G.camera)
+  }
+  else{
+    G.renderer.render(G.scene, G.camera)
+  }
 
 }.bind(G)
 
