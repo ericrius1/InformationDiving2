@@ -26,7 +26,6 @@ G.Boids = function() {
     G.scene.add(sphere);
 
     var geo = new THREE.Geometry()
-    //TONY: WHY DOES THIS INITIAL POSITION AFFECT WHETHER I CAN VIEW PARTICLES AFTER I CHANGE THEIR POSITION?
     var pos = new THREE.Vector3(0, 0, 0)
       //Create particle pool
     for (var j = 0; j < this._particleCount; j++) {
@@ -34,7 +33,7 @@ G.Boids = function() {
     }
     var material = new THREE.PointCloudMaterial({
       color: _.sample(this._colorPalette),
-      size: 2.0,
+      size: 1.0,
     })
     var pointCloud = new THREE.PointCloud(geo, material);
     // pointCloud.sortParticles = true
@@ -91,7 +90,7 @@ var Boid = function() {
     _height = 500,
     _depth = 200,
     _goal, _neighborhoodRadius = 100,
-    _maxSpeed = 1,
+    _maxSpeed = 4,
     _maxSteerForce = 0.1,
     _avoidWalls = false;
 

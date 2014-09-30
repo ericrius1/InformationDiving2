@@ -97,8 +97,11 @@ G.DottedLine.prototype.spawn = function(){
 
     opacity.value[vertexIndex++] = 1;
     opacity.needsUpdate = true
-    if (vertexIndex === opacity.value.length) return
+    if (vertexIndex === opacity.value.length){
+      return; 
+    }
 
+      
     setTimeout(function() {
       growStrand(strand, vertexIndex);
     }.bind(this), this._growInterval);

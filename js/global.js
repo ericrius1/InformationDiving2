@@ -103,6 +103,7 @@ G.init = function() {
   this.createPrimitives();
   G.controls = new Controls();
   G.hud = new Hud();
+  G.hud.addSphere();
 
   //Skydome
   var skyParams = {
@@ -179,11 +180,11 @@ G.animate = function() {
   G.primitives['57'].update();
   TWEEN.update()
   this.stats.update()
-  requestAnimationFrame(this.animate.bind(this));
+  requestAnimationFrame(this.animate);
   G.renderer.clear();
   G.composer.render();
 
-}
+}.bind(G)
 
 G.loadTextures = function() {
   for (var i = 0; i < G.texturesToLoad.length; i++) {
@@ -207,10 +208,10 @@ G.loadTexture = function(name, file) {
 }
 
 G.onResize = function() {
-  console.log("RESIZE");
   if(G.overlay){
-    G.overlay.scale.set( G.w/1000, G.h/1000,1);
+    G.overlay.scale.set( G.w/1000, G.h/1000, 1);
     G.overlay.position.z = -G.h*0.1 /(2*Math.tan( G.camera.fov*(Math.PI/360)) );
+
   }
   this.w = window.innerWidth;
   this.h = window.innerHeight;
