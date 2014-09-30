@@ -102,7 +102,7 @@ G.emitter = new EventEmitter();
 G.init = function() {
   this.createPrimitives();
   G.controls = new Controls();
-  G.hud = new Hud();
+  // G.hud = new Hud();
   // G.hud.addSphere();
 
   //Skydome
