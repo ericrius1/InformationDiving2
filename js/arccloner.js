@@ -40,8 +40,8 @@ G.ArcCloner.prototype.spawn = function(){
   var curve = new THREE.QuadraticBezierCurve3();
 
   curve.v0 = new THREE.Vector3(0, 0, 0);
-  curve.v1 = new THREE.Vector3(G.rf(0.1, 1), G.rf(.1, 1), 0);
-  curve.v2 = new THREE.Vector3(G.rf(1, 3), G.rf(1, 2), 0);
+  curve.v1 = new THREE.Vector3(G.rf(0.1, 1), G.rf(1, 2), 0);
+  curve.v2 = new THREE.Vector3(G.rf(1, 3), 0, 0);
 
   var opacity = strandMat.attributes.opacity.value
   for (var j = 0; j < SUBDIVISIONS; j++) {
