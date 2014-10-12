@@ -1,7 +1,7 @@
 G.pHeight = 10
 
 
-G.bloom = 1.1
+G.bloom = 3.1
 
 
 G.texturesToLoad = [
@@ -186,14 +186,9 @@ G.animate = function() {
   TWEEN.update()
   this.stats.update()
   requestAnimationFrame(this.animate);
-  // G.renderer.clear();
-  // G.composer.render();
-  if(G.vrMode){
-    G.effect.render(G.scene, G.camera)
-  }
-  else{
-    G.renderer.render(G.scene, G.camera)
-  }
+  G.renderer.clear();
+  G.composer.render();
+  
 
 }.bind(G)
 

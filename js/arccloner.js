@@ -1,7 +1,8 @@
 G.ArcCloner = function(active, key) {
   G.Primitive.apply(this, arguments);
   this._distanceFromPlayer = 200
-  this._spawnInterval = 40;
+  this._spawnInterval = 1;
+  this.num = 0
     
 }
 
@@ -13,8 +14,10 @@ G.ArcCloner.prototype.constructor = G.ArcCloner;
 
 G.ArcCloner.prototype.spawn = function(){
 
-
-  var strandMat = new THREE.ShaderMaterial({
+  for(var i = 0; i < 100; i++){
+    this.num++
+    console.log(this.num)
+     var strandMat = new THREE.ShaderMaterial({
     uniforms: {
       color: {
         type: 'c',
@@ -78,4 +81,6 @@ G.ArcCloner.prototype.spawn = function(){
     }, 30)
 
   }
+  }
+ 
 }
