@@ -14,8 +14,8 @@ G.ArcCloner.prototype.constructor = G.ArcCloner;
 
 G.ArcCloner.prototype.spawn = function(){
 
-  for(var i = 0; i < 100; i++){
-    this.num++
+  for(var i = 0; i < 1; i++){
+
     console.log(this.num)
      var strandMat = new THREE.ShaderMaterial({
     uniforms: {
